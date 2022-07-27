@@ -5,9 +5,10 @@ export const hour = writable(date.getHours());
 export const minute = writable(date.getMinutes());
 export const history = writable([])
 export const cats = writable({})
+// for debug
 export const token = writable("")
 
-export const lastSync = writable(0)
+export const offline = writable(true)
 
 const BASEURL = 'http://localhost:8000'
 
@@ -51,6 +52,7 @@ export async function getToken (username, password) {
 }
 
 
+
 export async function storeAction (endtime, duration, category, action) {
     /*
         parameters:
@@ -70,13 +72,25 @@ export async function storeAction (endtime, duration, category, action) {
         action: action
     })
 
-    fetch(BASEURL+'/v0/', {
+    const controller = new AbortController()
+
+    // 5 second timeout:
+    const timeoutId = setTimeout(() => controller.abort(), 5000)
+
+    const res = await fetch(BASEURL+'/v0/', {
         method: "PUT",
         headers: {
             'Content-Type': 'application/json'
           },
-        body: body_
-    })
+        body: body_,
+        signal: controller.signal // 5 sec
+    }).catch(()=>{offline.set(true)})
+      
+    if ( (typeof res === 'undefined') || (res.status != 200) ){
+        offline.set(true)
+        return
+    }
+    offline.set( false )
 }
 
 
@@ -93,19 +107,26 @@ export async function getHistory () {
         "token": get(token)
     })
 
+    const controller = new AbortController()
+
+    // 5 second timeout:
+    const timeoutId = setTimeout(() => controller.abort(), 5000)
+
     const duration = "0"
     const res = await fetch(BASEURL+'/v0/query/'+duration, {
         method: "POST",
         headers: {
             'Content-Type': 'application/json'
           },
-        body: body_
-    })
-    
-    if ( res.status != 200 ){
+        body: body_,
+        signal: controller.signal // 8 sec
+    }).catch(()=>{offline.set(true)})
+      
+    if ( (typeof res === 'undefined') || (res.status != 200) ){
+        offline.set(true)
         return
     }
-
+    offline.set( false )
 
     res.json().then(result=>{
         let h = JSON.parse(result)

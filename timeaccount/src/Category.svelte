@@ -8,9 +8,10 @@
     let sorted
 
     cats.subscribe( value=> {
-        buttons = value[id]
-        sorted = Object.keys(buttons).sort((a,b)=>buttons[b] - buttons[a])
-        // console.log(sorted)
+        if ( Object.keys(value).length > 0 ){
+            buttons = value[id]
+            sorted = Object.keys(buttons).sort((a,b)=>buttons[b] - buttons[a])
+        }
     })
 
     let inputtext;

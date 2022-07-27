@@ -4,7 +4,7 @@
 	import Minute from "./Minute.svelte"
 	import History from "./History.svelte"
 	import LogoutComponent from './Components/LogoutComponent.svelte';
-    import { cats, getHistory, token } from './stores.ts'
+    import { cats, getHistory, offline } from './stores.ts'
 
 	import { onMount } from 'svelte';
 
@@ -27,6 +27,9 @@
 
 <main>
 	<LogoutComponent />
+	{#if $offline}
+	<span>Offline</span>
+	{/if}
 	<p>
 		<Hour />時<Minute />分以降、何をしていましたか?
 	</p>
@@ -40,5 +43,8 @@
 <style>
 	p {
 		margin: 0;
+	}
+	span {
+		color: #f00;
 	}
 </style>

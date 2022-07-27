@@ -80,8 +80,9 @@ def token_to_user_id(cur, token):
 
 
 @app.post("/v0/query/{duration}")
-async def getHistory(token: Token, duration: int):
+async def get_history(token: Token, duration: int):
     """
+    It returns the action history of the user. Duration is useless for now.
     """
 
     def merge(r1, r2):
@@ -118,50 +119,11 @@ async def getHistory(token: Token, duration: int):
     # /DB
 
 
-# @app.post("/guest/")
-# async def get_guest(guest: Guest1):
-#     """
-#     指定されたゲストの情報を抽出する。
-#     変更不要
-#     """
-#     # logger = getLogger('uvicorn')
-
-#     # DB
-#     cur = con.cursor()
-#     # token to uid
-#     user_id = token_to_user_id(cur, guest.token)
-#     if user_id is None:
-#         return json.dumps({})
-
-#     # uidの最新レコードを返す。なければ未定として返す。
-#     u, n, s, t = user_id, "No name", 0, 0
-#     for row in cur.execute(f'SELECT * FROM guests WHERE user_id = "{user_id}" ORDER BY rowid DESC LIMIT 1'):
-#         u, n, t, s = row
-#     return json.dumps({"user_id": u,
-#                         "nickname": n,
-#                         "seat": s,
-#                         "table": t})
-#     # /DB
-
-
-
-# def setGuestInfo(cur, user_id, nickname, table_id, seat):
-#     found = False
-#     for row in cur.execute(f'SELECT * FROM guests WHERE user_id = "{user_id}" ORDER BY rowid DESC LIMIT 1'):
-#         found = True
-#         break
-#     if not found:
-#         # add new
-#         cur.execute(f'INSERT INTO guests VALUES ("{user_id}", "{nickname}", {table_id}, {seat})')
-#         return "Added."
-#     # overwrite
-#     cur.execute(f'UPDATE guests SET nickname = "{nickname}", table_id = {table_id}, seat = {seat} WHERE user_id = "{user_id}" ')
-#     return "Updated."
-
 
 @app.put("/v0/")
 async def store_record(record: Record):
     """
+    It stores an action to the DB.
     """
     # logger = getLogger('uvicorn')
 
@@ -178,38 +140,15 @@ async def store_record(record: Record):
     con.commit()
     # /DB
 
-# @app.delete("/v0/")
-# async def cancel_seat(guest: Guest):
-#     """
-#     Cancel seat reservation of the guest id / nickname
-
-#     座席情報を0-0に上書きする。(新仕様)
-#     もしレコードがない場合は書き足す。これはupdate_guestと連携させるべき。(新仕様)
-#     """
-#     # logger = getLogger('uvicorn')
-
-#     # DB
-#     cur = con.cursor()
-#     # token to uid
-#     user_id = token_to_user_id(cur, guest.token)
-#     if user_id is None:
-#         return "Missing token."
-
-#     setGuestInfo(cur, user_id, guest.nickname, table_id=0, seat=0)
-#     con.commit()
-#     # /DB
-
-#     return "Deleted successfully"
-
 
 @app.post("/v0/auth/")
 async def isuue_token(login: Login):
     """
-    ユーザ名、パスワードをauth DBに照会し、合致したらtokenを生成し、DBに記録し、tokenを返す。
-    ほかのAPIはすべてtokenを利用して行う。
-    これにより、expireの管理をサーバ側でできるし、user/passwdなどの情報をクライアントに保持する必要もなく、
-    tokenをクライアントのコード内に明示する必要もない。
-    (debuggerがあれば読みとることはできるが、expireすれば無効になる)
+    It receives the username and password, compare them with the data in the user DB, and issue a new token.
+    The token is valid 24 hours after the last access.
+    All the other APIs are accessed via this token.
+
+    There is no method to add new user to the DB.
     """
     logger = getLogger('uvicorn')
 
