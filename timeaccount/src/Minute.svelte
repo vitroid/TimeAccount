@@ -1,6 +1,6 @@
 <script lang="ts">
     const items = [...Array(60).keys()];
-    import { minute } from './stores.ts'
+    import { minute } from './stores'
 
     // let selected = $minute
     // $: {

@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { getHistory } from './stores';
-    import { history } from './stores.ts'
+    import { history } from './stores';
 </script>
 
 <ul>
@@ -11,5 +10,5 @@
         | {event[4]}</li>
     {/each}
 </ul>
-<button on:click={getHistory} >Load History (test)</button>
+<!-- <button on:click={getHistory} >Load History (test)</button> -->
 

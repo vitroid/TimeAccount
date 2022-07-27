@@ -1,6 +1,6 @@
 <script lang="ts">
     import { get } from 'svelte/store';
-    import { hour, minute, history, storeAction, cats } from './stores.ts'
+    import { hour, minute, history, storeAction, cats } from './stores'
     // Categoryとは、テキスト入力枠とボタンのセットである。
     export let id;
     // export let whatUdid;
@@ -29,17 +29,21 @@
             history.update(v => [[0,now,delta,id,action,h,m], ...v])
             // historyを更新することで、自動的にボタンが更新される、はず。
             storeAction(now, delta, id, action)
+
         }
-        // // ボタンを作成
-        // buttons[name] = now
-        // // sort and pick 6 newest items
-        // sorted = Object.keys(buttons).sort((a,b)=>buttons[b] - buttons[a]).slice(0,6)
-        // // re-make buttons
-        // let newbuttons = {}
-        // sorted.forEach(element => {
-        //     newbuttons[element] = buttons[element]
-        // });
-        // buttons = newbuttons
+        // 最新版では、サーバと矛盾がない限りreloadしないので、ボタンを強制的に追加する。
+        // ボタンを作成または更新
+        buttons[action] = now
+        // sort and pick 6 newest items
+        sorted = Object.keys(buttons).sort((a,b)=>buttons[b] - buttons[a]).slice(0,6)
+        // re-make buttons
+        let newbuttons = {}
+        sorted.forEach(element => {
+            newbuttons[element] = buttons[element]
+        });
+        buttons = newbuttons
+
+        // 最終操作時刻を更新
         hour.set(h)
         minute.set(m)
     }

@@ -4,7 +4,7 @@
 	import Minute from "./Minute.svelte"
 	import History from "./History.svelte"
 	import LogoutComponent from './Components/LogoutComponent.svelte';
-    import { cats, getHistory } from './stores.ts'
+    import { cats, getHistory, token } from './stores.ts'
 
 	import { onMount } from 'svelte';
 

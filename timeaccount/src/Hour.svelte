@@ -1,6 +1,6 @@
 <script lang="ts">
     const items = [...Array(24).keys()];
-    import { hour } from './stores.ts'
+    import { hour } from './stores'
 
     // let h
     // hour.subscribe(value => {
