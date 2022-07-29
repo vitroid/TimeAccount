@@ -10,7 +10,7 @@ export const token = writable("")
 
 export const offline = writable(true)
 
-const BASEURL = 'http://localhost:8000'
+const BASEURL = 'http://www.chem.okayama-u.ac.jp:8088'
 // const BASEURL = "https://timeaccount-test-app.herokuapp.com"
 
 export async function getToken (username, password) {
@@ -142,9 +142,14 @@ export async function getHistory () {
             const locallast = Math.floor(l[0][1])
             // サーバ上の最終actionの時刻
             const remotelast = h[0][1]
+            // もし履歴の最新と、こちらの履歴の最新の時刻が一致するなら
+            console.log(locallast, remotelast)
             if ( locallast == remotelast ){
                 return
-            } 
+            }
+            // 一致しない場合は、こちらの時刻も変更する。
+            minute.set(Math.floor(remotelast % 60))
+            hour.set(Math.floor(remotelast / 60 + 9) % 24)
         }
 
         let categories = {}
