@@ -11,6 +11,7 @@ export const token = writable("")
 export const offline = writable(true)
 
 const BASEURL = 'http://localhost:8000'
+// const BASEURL = "https://timeaccount-test-app.herokuapp.com"
 
 export async function getToken (username, password) {
     /* parameters:
@@ -119,7 +120,7 @@ export async function getHistory () {
             'Content-Type': 'application/json'
           },
         body: body_,
-        signal: controller.signal // 8 sec
+        signal: controller.signal // 5 sec
     }).catch(()=>{offline.set(true)})
       
     if ( (typeof res === 'undefined') || (res.status != 200) ){

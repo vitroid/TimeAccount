@@ -36,7 +36,7 @@
         // ボタンを作成または更新
         buttons[action] = now
         // sort and pick 6 newest items
-        sorted = Object.keys(buttons).sort((a,b)=>buttons[b] - buttons[a]).slice(0,6)
+        sorted = Object.keys(buttons).sort((a,b)=>buttons[b] - buttons[a]) //.slice(0,6)
         // re-make buttons
         let newbuttons = {}
         sorted.forEach(element => {

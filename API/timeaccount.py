@@ -1,24 +1,5 @@
 """
-# TimeAccount API
-
-設計方針
-
-セッションIDを介して接続する。
-当面はログイン後にAPI側がハッシュを発行する、seat-apiの方式にする。
-
-記録は随時行う。
-
-期間指定で過去のデータを一気に提供する機能。
-* その時に、データ連結も行う。
-* 一分に1回に制限する、か、キャッシュしておく。
-
-暗号化しない。(当面)
-
-さっさと使いはじめたいので、最低限のAPIを準備してしまおう。
-
 """
-
-
 from logging import getLogger, DEBUG, basicConfig
 
 from collections import defaultdict
@@ -34,6 +15,16 @@ from pydantic import BaseModel
 
 
 basicConfig(level=DEBUG)   # add this line
+
+# from createdb import _createdb
+# import os
+# if os.path.exists("timeaccount.db"):
+#     os.remove("timeaccount.db")
+#     # return "DB exists."
+# _createdb()
+# from adduser import adduser
+# adduser(["matto", "papepo-master"])
+
 
 con = sqlite3.connect('timeaccount.db')
 
@@ -71,11 +62,15 @@ class Login(BaseModel):
 
 
 def token_to_user_id(cur, token):
-    for row in cur.execute(f'SELECT * FROM tokens WHERE token = "{token}" ORDER BY rowid DESC LIMIT 1'):
+    for row in cur.execute('SELECT * FROM tokens WHERE token = :token ORDER BY rowid DESC LIMIT 1', {"token": token}):
         user_id, token, expire = row
         now = time.time()
         if now < expire:
-            cur.execute(f'UPDATE tokens SET user_id="{user_id}", token="{token}", expire={now+86400} WHERE token = "{token}"')
+            cur.execute('UPDATE tokens SET user_id=:user_id, token=:token, expire=:expire WHERE token = :token', {
+                "expire" : now+86400,
+                "user_id": user_id,
+                "token"  : token,
+            })
             return user_id
 
 
@@ -106,7 +101,7 @@ async def get_history(token: Token, duration: int):
 
     # とりあえず、durationは無視する。
     rows = []
-    for row in cur.execute(f'SELECT * FROM records WHERE user_id = {user_id} ORDER BY endtime DESC'):
+    for row in cur.execute('SELECT * FROM records WHERE user_id = :user_id ORDER BY endtime DESC', { "user_id": user_id }):
         # 連続したレコードのactionが同じで、時区間が重なっていれば、マージする。
         if len(rows) > 0 and rows[-1][4] == row[4] and rows[-1][3] == row[3]:
             newrange = merge(rows[-1][1:3], row[1:3])
@@ -136,7 +131,13 @@ async def store_record(record: Record):
         return "Missing token."
 
     # !!!文字列のチェックが必要。セキュリティホールになる
-    cur.execute(f'INSERT INTO records VALUES ( {user_id}, {record.endtime}, {record.duration}, {record.category}, "{record.action}" ) ')
+    cur.execute('INSERT INTO records VALUES ( :user_id, :endtime, :duration, :category, :action ) ', {
+        "user_id" : user_id,
+        "endtime" : record.endtime,
+        "duration": record.duration,
+        "category": record.category,
+        "action"  : record.action,
+    })
     con.commit()
     # /DB
 
@@ -155,7 +156,7 @@ async def isuue_token(login: Login):
     # DB
     cur = con.cursor()
     logger.info(login)
-    for row in cur.execute(f'SELECT * FROM auth WHERE username = "{login.un}"'):
+    for row in cur.execute('SELECT * FROM auth WHERE username = :username ', { "username": login.un }):
         uname, pw, uid = row
         if pw == login.pw:
             # match!
@@ -166,35 +167,12 @@ async def isuue_token(login: Login):
             h.update(data)
             token = h.hexdigest()
             # 24 hours
-            cur.execute(f'INSERT INTO tokens VALUES ("{uid}", "{token}", {now+86400})')
+            cur.execute('INSERT INTO tokens VALUES ( :uid, :token, :time )', { "uid": uid, "token":token, "time":now+86400 })
             con.commit()
             return token
     return ""
     # /DB
 
-# 必要なAPI
-# 全テーブルの総覧。構造化したJSONを返すのがいい。座席占有状況と、ニックネームはまとめて返す。
-# これで酒井さんの123に対応できる。
-# get_hallかなんか。hall全体の情報を得るAPI
-# @app.post("/hall/")
-# async def get_hall(guest: Guest1):
-#     """
-#     すべてのテーブルの利用状況を返す。
-#     """
-#     # logger = getLogger('uvicorn')
-
-#     # DB
-#     cur = con.cursor()
-#     user_id = token_to_user_id(cur, guest.token)
-#     if user_id is None:
-#         return json.dumps({})
-
-#     hall = defaultdict(dict)
-#     for row in cur.execute(f'SELECT * FROM guests WHERE table_id != 0'):
-#         u, n, t, s = row
-#         hall[t][s] = n
-#     return json.dumps(hall)
-#     # /DB
 
 
 if __name__ == "__main__":
