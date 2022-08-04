@@ -1,8 +1,11 @@
 <script lang="ts">
-    import { get } from 'svelte/store';
+    // import { get } from 'svelte/store';
+    import { palette } from './color';
     import { hour, minute, history, storeAction, cats } from './stores'
     // Categoryとは、テキスト入力枠とボタンのセットである。
     export let id;
+
+    let bg = palette(id)
     // export let whatUdid;
     let buttons
     let sorted
@@ -64,7 +67,7 @@
     // ヒストリーを読みこんで、ボタンを再配置する機能が欲しい。
 </script>
 
-<p>
+<p style:background-color={bg} >
     <input bind:value={inputtext} placeholder="What did you do til now?" on:keydown={onKeyDown} />
     {#each sorted as name, i}
     <button on:click={onClick} >{name}</button>
@@ -74,5 +77,16 @@
 <style>
     p {
         margin: 0;
+        padding: 2px;
+    }
+    button {
+        margin: 0;
+        background-color: #0000;
+        color: white;
+    }
+    input {
+        margin: 0;
+        background-color: #0000;
+        color: white;
     }
 </style>

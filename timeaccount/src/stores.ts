@@ -8,7 +8,7 @@ export const cats = writable({})
 // for debug
 export const token = writable("")
 
-export const offline = writable(true)
+export const status = writable("Offline")
 
 const BASEURL = 'http://www.chem.okayama-u.ac.jp:8088'
 // const BASEURL = "https://timeaccount-test-app.herokuapp.com"
@@ -64,6 +64,7 @@ export async function storeAction (endtime, duration, category, action) {
 
         store an action record to the server
     */
+    status.set( "Updating" )
 
     const body_ = JSON.stringify({
         token: get(token),
@@ -85,13 +86,13 @@ export async function storeAction (endtime, duration, category, action) {
           },
         body: body_,
         signal: controller.signal // 5 sec
-    }).catch(()=>{offline.set(true)})
+    }).catch(()=>{status.set("Offline")})
       
     if ( (typeof res === 'undefined') || (res.status != 200) ){
-        offline.set(true)
+        status.set("Uncertain")
         return
     }
-    offline.set( false )
+    status.set( "" )
 }
 
 
@@ -121,16 +122,21 @@ export async function getHistory () {
           },
         body: body_,
         signal: controller.signal // 5 sec
-    }).catch(()=>{offline.set(true)})
+    }).catch(()=>{status.set("Offline")})
       
     if ( (typeof res === 'undefined') || (res.status != 200) ){
-        offline.set(true)
+        status.set("Uncertain")
         return
     }
-    offline.set( false )
+    status.set( "" )
 
     res.json().then(result=>{
-        let h = JSON.parse(result)
+        let remote_history = JSON.parse(result)
+        if ( remote_history.length > 0 ){
+            const remotelast = remote_history[0][1]
+            minute.set(Math.floor(remotelast % 60))
+            hour.set(Math.floor(remotelast / 60 + 9) % 24)
+        }
 
         // もし、読みこんだhistoryの最終データが、クライアント上の最終データと同じ時刻であれば、
         // historyもcatsも更新しない。
@@ -141,20 +147,16 @@ export async function getHistory () {
             // 手許の最終actionの時刻
             const locallast = Math.floor(l[0][1])
             // サーバ上の最終actionの時刻
-            const remotelast = h[0][1]
+            const remotelast = remote_history[0][1]
             // もし履歴の最新と、こちらの履歴の最新の時刻が一致するなら
-            console.log(locallast, remotelast)
             if ( locallast == remotelast ){
                 return
             }
-            // 一致しない場合は、こちらの時刻も変更する。
-            minute.set(Math.floor(remotelast % 60))
-            hour.set(Math.floor(remotelast / 60 + 9) % 24)
         }
 
         let categories = {}
-        for (let r in h){
-            let row = h[r]
+        for (let r in remote_history){
+            let row = remote_history[r]
             // 0 user_id, 1 endtime, 2 duration, 3 category, 4 action, 5 hours, 6 minutes
 
             // svelteでの表示が楽になるように、時と分を準備する。
@@ -177,7 +179,7 @@ export async function getHistory () {
             }
         }
         // writableを更新する。
-        history.set(h)
+        history.set(remote_history)
         cats.set(categories)
     })
     return

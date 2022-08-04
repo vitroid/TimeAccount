@@ -2,15 +2,15 @@
 	import Category from "./Category.svelte"
 	import Hour from "./Hour.svelte"
 	import Minute from "./Minute.svelte"
-	import History from "./History.svelte"
+	import HistoryButton from "./HistoryButton.svelte"
+	import EventList from "./EventList.svelte"
 	import LogoutComponent from './Components/LogoutComponent.svelte';
-    import { cats, getHistory, offline } from './stores.ts'
+    import { cats, getHistory, status } from './stores.ts'
+	import Modal from "./Modal.svelte";
 
 	import { onMount } from 'svelte';
 
-	onMount(() => {
-		getHistory()
-	})
+	getHistory()
 
 	setInterval(() => {
 		getHistory()
@@ -25,11 +25,10 @@
 	}
 </script>
 
-<main>
+<Modal>
+	<main>
 	<LogoutComponent />
-	{#if $offline}
-	<span>Offline</span>
-	{/if}
+	<span>{$status}</span>
 	<p>
 		<Hour />時<Minute />分以降、何をしていましたか?
 	</p>
@@ -37,8 +36,10 @@
 	<Category {id}/>
 	{/each}
 	<button name="name" on:click={addCategory} >+ New Category</button>
-	<History />
+	<HistoryButton />
+	<EventList />
 </main>
+</Modal>
 
 <style>
 	p {
