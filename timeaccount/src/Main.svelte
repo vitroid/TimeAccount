@@ -1,4 +1,5 @@
 <script>
+	import { Tabs, TabList, TabPanel, Tab } from './Components/Tabs/tabs.js';
 	import Category from "./Category.svelte"
 	import Hour from "./Hour.svelte"
 	import Minute from "./Minute.svelte"
@@ -37,7 +38,28 @@
 	<Category {id}/>
 	{/each}
 	<button name="name" on:click={addCategory} >+ New Category</button>
-	<History />
+	<script>
+	</script>
+	
+	<Tabs>
+		<TabList>
+			<Tab>History</Tab>
+			<Tab>This 24 hours</Tab>
+			<Tab>Statistics</Tab>
+		</TabList>
+	
+		<TabPanel>
+			<History />
+		</TabPanel>
+	
+		<TabPanel>
+			<h2>Second panel</h2>
+		</TabPanel>
+	
+		<TabPanel>
+			<h2>Third panel</h2>
+		</TabPanel>
+	</Tabs>
 </main>
 
 <style>
