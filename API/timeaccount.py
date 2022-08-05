@@ -114,7 +114,7 @@ async def get_history(token: Token, minutes: int):
     rows = []
     for row in cur.execute('SELECT * FROM records WHERE user_id = :user_id AND endtime > :ancient ORDER BY endtime DESC', 
                             { "user_id": user_id,
-                              "ancient": ancient*60 }):
+                              "ancient": ancient }):
         # 連続したレコードのactionが同じで、時区間が重なっていれば、マージする。
         if len(rows) > 0:
             category, action = row[3:5]
