@@ -12,15 +12,17 @@
         tiles = statistics( events, binw, oldest )
     })
 
+    const daynames = ["Today", "Yesterday", "2 days ago", "3 days ago", "4 days ago", "5 days ago", "6 days ago", "A week ago"]
+
 </script>
 
 <div class="container">
 {#if Object.keys(tiles).length}
 {#each Object.keys(tiles).sort() as day, i}
 <div class="ti">
-    <div class="he">{day}</div>
+    <div class="he">{daynames[day]}</div>
     {#each Object.keys(tiles[day]).sort() as cat}
-    <div class="ca" style="width:{tiles[day][cat]}%;background-color:{palette(cat)};">
+    <div class="ca" style="width:{tiles[day][cat]}px;background-color:{palette(cat)};">
         {cat}
     </div>
     {/each}
@@ -49,7 +51,7 @@
         text-align: center;
     }
     .he {
-        width:50px;
+        width:200px;
         text-align: center;
     }
 </style>

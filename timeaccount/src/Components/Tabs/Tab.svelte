@@ -10,17 +10,31 @@
 
 <style>
 	button {
-		background: none;
+		border-bottom: 3px solid #5ab4bd;
+		font-size: 16px;
+		height: 40px;
+		width: 100px;
+		color: #565656;
+		background-color: #d9d9d9;
+		transition: all 0.2s ease;
+
+		/* background: none; */
 		border: none;
-		border-bottom: 2px solid white;
+		/* border-bottom: 2px solid white; */
 		border-radius: 0;
 		margin: 0;
-		color: #ccc;
+		padding: 5px;
+		/* color: #ccc; */
 	}
 	
 	.selected {
-		border-bottom: 2px solid teal;
-		color: #333;
+		/* border-bottom: 2px solid teal;
+		color: #333; */
+		background-color: #5ab4bd;
+	    color: #fff;
+	}
+	button:hover {
+		opacity: 0.75;
 	}
 </style>
 
