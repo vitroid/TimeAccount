@@ -108,7 +108,7 @@ async def get_history(token: Token, minutes: int):
     # old enough time to be ignored
     if minutes == 0:
         ancient = 0
-    else
+    else:
         ancient = time.time / 60 - minutes
 
     rows = []
