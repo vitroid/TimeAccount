@@ -28,7 +28,7 @@
 	<LogoutComponent />
 	<span>{$status}</span>
 	<p>
-		<Hour />時<Minute />分以降、何をしていましたか?
+		<Hour />時<Minute />分以降、何をしていましたか? TEST
 	</p>
 	{#each Object.keys($cats) as id}
 	<Category {id}/>
