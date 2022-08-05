@@ -1,6 +1,6 @@
 <script lang="ts">
     import { history } from './stores';
-    import { palette } from './color';
+    import { palettes } from './color';
 
     // 日付けごとに別のカラムにする。
     let days = []
@@ -35,7 +35,7 @@
     <div class="list">
         {#each events as event, i}
         <!-- 0 user_id, 1 endtime, 2 duration, 3 category, 4 action, 5 hours, 6 minutes-->
-        <div class="ev" style="background-color:{palette(event[3])};" >
+        <div class="ev" style="background-color:{$palettes[event[3]]};" >
             <!-- height:{event[2]}px; -->
             {event[5]}:{event[6]} | {event[4]}
         </div>

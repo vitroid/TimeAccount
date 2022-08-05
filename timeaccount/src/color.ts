@@ -1,4 +1,8 @@
-function hslToHex(h, s, l) {
+import { writable, get } from 'svelte/store';
+export const palettes = writable([])
+export const huerange = writable([0,54])
+
+export function hslToHex(h, s, l) {
     l /= 100;
     const a = s * Math.min(l, 1 - l) / 100;
     const f = n => {
@@ -9,13 +13,24 @@ function hslToHex(h, s, l) {
     return `#${f(0)}${f(8)}${f(4)}`;
 }
 
-export function palette(n){
+function palette(n){
     if ( n < 0 ){
         return "#ccc"
     }
-    let hue = n * (Math.sqrt(5)-1) / 2 / 3
-    hue = (hue * 360) % 360
+    let ra = get(huerange)
+    let hue = (ra[0] + n*(ra[1]-ra[0])) % 360
     let s=30
     let v=50
     return hslToHex(hue, s, v)
 }
+
+huerange.subscribe(values=>{
+    let pals = []
+    for(let i=0; i<50; i++){
+        pals = [...pals, palette(i)]
+    }
+    palettes.set(pals)
+})
+
+
+

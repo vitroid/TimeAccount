@@ -1,6 +1,6 @@
 <script lang="ts">
     import { history } from './stores';
-    import { palette } from './color';
+    import { palettes } from './color';
     import { statistics } from './stat'
 
     let tiles = {}
@@ -22,7 +22,7 @@
 <div class="ti">
     <div class="he">{daynames[day]}</div>
     {#each Object.keys(tiles[day]).sort() as cat}
-    <div class="ca" style="width:{tiles[day][cat]}px;background-color:{palette(cat)};">
+    <div class="ca" style="width:{tiles[day][cat]}px;background-color:{$palettes[cat]};">
         {cat}
     </div>
     {/each}

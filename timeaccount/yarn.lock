@@ -23,6 +23,11 @@
     "chalk" "^2.0.0"
     "js-tokens" "^4.0.0"
 
+"@bulatdashiev/svelte-slider@^1.0.3":
+  "integrity" "sha512-GkVyqIjzQnqy0FQIm8wqRLIOFQBQ/Ewd381Y7KwABsSwiSu0eMYO0/8s4q/wlMDDb2/+U66rXlalaUokUfw8Vg=="
+  "resolved" "https://registry.npmjs.org/@bulatdashiev/svelte-slider/-/svelte-slider-1.0.3.tgz"
+  "version" "1.0.3"
+
 "@jridgewell/gen-mapping@^0.3.0":
   "integrity" "sha512-mh65xKQAzI6iBcFzwv28KVWSmCkdRBWoOh+bYQGW3+6OZvbbN3TqMGo5hqYxQniRcH9F2VZIoJCm4pa3BPDK/A=="
   "resolved" "https://registry.npmjs.org/@jridgewell/gen-mapping/-/gen-mapping-0.3.2.tgz"

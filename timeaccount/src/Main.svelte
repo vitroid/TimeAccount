@@ -1,6 +1,7 @@
 <script>
 	import { Tabs, TabList, TabPanel, Tab } from './Components/Tabs/tabs.js';
 	import Category from "./Category.svelte"
+	import ColorSelector from "./ColorSelector.svelte"
 	import Hour from "./Hour.svelte"
 	import Minute from "./Minute.svelte"
 	import HourStat from "./HourStat.svelte";
@@ -28,7 +29,7 @@
 	<LogoutComponent />
 	<span>{$status}</span>
 	<p>
-		<Hour />時<Minute />分以降、何をしていましたか? test
+		<Hour />時<Minute />分以降、何をしていましたか?
 	</p>
 	{#each Object.keys($cats) as id}
 	<Category {id}/>
@@ -40,6 +41,7 @@
 			<Tab>Events</Tab>
 			<Tab>Hourly stat</Tab>
 			<Tab>Daily stat</Tab>
+			<Tab>Settings</Tab>
 		</TabList>
 	
 		<TabPanel>
@@ -52,6 +54,10 @@
 	
 		<TabPanel>
 			<DayStat />
+		</TabPanel>
+
+		<TabPanel>
+			<ColorSelector />
 		</TabPanel>
 	</Tabs>
 </main>
