@@ -165,11 +165,11 @@ async def isuue_token(login: Login):
 
     There is no method to add new user to the DB.
     """
-    logger = getLogger('uvicorn')
+    # logger = getLogger('uvicorn')
 
     # DB
     cur = con.cursor()
-    logger.info(login)
+    # logger.info(login)
     for row in cur.execute('SELECT * FROM auth WHERE username = :username ', { "username": login.un }):
         uname, pw, uid = row
         if pw == login.pw:
