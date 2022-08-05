@@ -10,6 +10,9 @@ function hslToHex(h, s, l) {
 }
 
 export function palette(n){
+    if ( n < 0 ){
+        return "#ccc"
+    }
     let hue = n * (Math.sqrt(5)-1) / 2 / 3
     hue = (hue * 360) % 360
     let s=30

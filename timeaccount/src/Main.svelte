@@ -4,13 +4,10 @@
 	import Hour from "./Hour.svelte"
 	import Minute from "./Minute.svelte"
 	import HourStat from "./HourStat.svelte";
-	// import HistoryButton from "./HistoryButton.svelte"
+	import DayStat from "./DayStat.svelte";
 	import EventList from "./EventList.svelte"
 	import LogoutComponent from './Components/LogoutComponent.svelte';
     import { cats, getHistory, status } from './stores.ts'
-	import Modal from "./Modal.svelte";
-
-	import { onMount } from 'svelte';
 
 	getHistory()
 
@@ -27,8 +24,7 @@
 	}
 </script>
 
-<Modal>
-	<main>
+<main>
 	<LogoutComponent />
 	<span>{$status}</span>
 	<p>
@@ -41,9 +37,9 @@
 	
 	<Tabs>
 		<TabList>
-			<Tab>History</Tab>
-			<Tab>This 24 hours</Tab>
-			<Tab>Statistics</Tab>
+			<Tab>Events</Tab>
+			<Tab>Hourly stat</Tab>
+			<Tab>Daily stat</Tab>
 		</TabList>
 	
 		<TabPanel>
@@ -51,16 +47,14 @@
 		</TabPanel>
 	
 		<TabPanel>
-			<!-- <HistoryButton /> -->
 			<HourStat />
 		</TabPanel>
 	
 		<TabPanel>
-			<h2>Third panel</h2>
+			<DayStat />
 		</TabPanel>
 	</Tabs>
 </main>
-</Modal>
 
 <style>
 	p {

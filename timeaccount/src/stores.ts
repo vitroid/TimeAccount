@@ -114,7 +114,7 @@ export async function getHistory () {
     // 5 second timeout:
     const timeoutId = setTimeout(() => controller.abort(), 5000)
 
-    const duration = "0"
+    const duration = "10080" // 10080 minutes == 1 week
     const res = await fetch(BASEURL+'/v0/query/'+duration, {
         method: "POST",
         headers: {
