@@ -109,7 +109,7 @@ async def get_history(token: Token, minutes: int):
     if minutes == 0:
         ancient = 0
     else:
-        ancient = time.time / 60 - minutes
+        ancient = time.time() / 60 - minutes
 
     rows = []
     for row in cur.execute('SELECT * FROM records WHERE user_id = :user_id AND endtime > :ancient ORDER BY endtime DESC', 
