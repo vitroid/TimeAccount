@@ -1,8 +1,10 @@
 <script>
+	import { Tabs, TabList, TabPanel, Tab } from './Components/Tabs/tabs.js';
 	import Category from "./Category.svelte"
 	import Hour from "./Hour.svelte"
 	import Minute from "./Minute.svelte"
-	import HistoryButton from "./HistoryButton.svelte"
+	import HourStat from "./HourStat.svelte";
+	// import HistoryButton from "./HistoryButton.svelte"
 	import EventList from "./EventList.svelte"
 	import LogoutComponent from './Components/LogoutComponent.svelte';
     import { cats, getHistory, status } from './stores.ts'
@@ -36,8 +38,27 @@
 	<Category {id}/>
 	{/each}
 	<button name="name" on:click={addCategory} >+ New Category</button>
-	<HistoryButton />
-	<EventList />
+	
+	<Tabs>
+		<TabList>
+			<Tab>History</Tab>
+			<Tab>This 24 hours</Tab>
+			<Tab>Statistics</Tab>
+		</TabList>
+	
+		<TabPanel>
+			<EventList />
+		</TabPanel>
+	
+		<TabPanel>
+			<!-- <HistoryButton /> -->
+			<HourStat />
+		</TabPanel>
+	
+		<TabPanel>
+			<h2>Third panel</h2>
+		</TabPanel>
+	</Tabs>
 </main>
 </Modal>
 
