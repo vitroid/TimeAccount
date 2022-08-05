@@ -14,7 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 
-basicConfig(level=DEBUG)   # add this line
+# basicConfig(level=DEBUG)   # add this line
 
 # from createdb import _createdb
 # import os
@@ -74,10 +74,16 @@ def token_to_user_id(cur, token):
             return user_id
 
 
-@app.post("/v0/query/{duration}")
-async def get_history(token: Token, duration: int):
+@app.post("/v0/query/{minutes}")
+async def get_history(token: Token, minutes: int):
     """
-    It returns the action history of the user. Duration is useless for now.
+    It returns the action history of the user.
+
+    [Parameters]
+    Minutes: select all events if it is zero, otherwise select events within {minutes}.
+
+    [Returns]
+    Event list in JSON format.
     """
 
     def merge(r1, r2):
@@ -99,20 +105,28 @@ async def get_history(token: Token, duration: int):
     if user_id is None:
         return json.dumps([])
 
-    # とりあえず、durationは無視する。
+    # old enough time to be ignored
+    if minutes == 0:
+        ancient = 0
+    else
+        ancient = time.time / 60 - minutes
+
     rows = []
-    for row in cur.execute('SELECT * FROM records WHERE user_id = :user_id ORDER BY endtime DESC', { "user_id": user_id }):
+    for row in cur.execute('SELECT * FROM records WHERE user_id = :user_id AND endtime > :ancient ORDER BY endtime DESC', 
+                            { "user_id": user_id,
+                              "ancient": ancient*60 }):
         # 連続したレコードのactionが同じで、時区間が重なっていれば、マージする。
-        if len(rows) > 0 and rows[-1][4] == row[4] and rows[-1][3] == row[3]:
-            newrange = merge(rows[-1][1:3], row[1:3])
-            if newrange is not None:
-                rows[-1][1], rows[-1][2] = newrange
-                continue
+        if len(rows) > 0:
+            category, action = row[3:5]
+            if rows[-1][4] == action and rows[-1][3] == category:
+                newrange = merge(rows[-1][1:3], row[1:3])
+                if newrange is not None:
+                    rows[-1][1], rows[-1][2] = newrange
+                    continue
         rows.append(list(row))
 
     return json.dumps(rows)
     # /DB
-
 
 
 @app.put("/v0/")
