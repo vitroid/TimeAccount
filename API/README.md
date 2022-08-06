@@ -3,9 +3,11 @@
 * Python appをherokuに上げる方法 https://qiita.com/ahpjop/items/e333eaf304dcdd72d886
 * herokuへのPythonアプリのdeploy。うまくいった。 http://kakedashi-xx.com:25214/index.php/2021/11/21/post-3678/
 
+
+あらかじめheroku上にtimeaccountアプリの準備はできており、DBも作ってある。
 ```
 $ git init
-$ git add Procfile requirements.txt runtime.txt timeaccount.py 
+$ git add Procfile requirements.txt runtime.txt timeaccount.py # 必要なものは4つだけ。
 $ git commit -m.
 $ heroku git:remote -a timeaccount
 $ git push heroku master
