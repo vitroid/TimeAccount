@@ -10,9 +10,7 @@ export const token = writable("")
 
 export const status = writable("Offline")
 
-const BASEURL = 'http://localhost:8088'
-// const BASEURL = 'http://www.chem.okayama-u.ac.jp:8088'
-// const BASEURL = "https://timeaccount-test-app.herokuapp.com"
+const BASEURL = "https://timeaccount.herokuapp.com"
 
 export async function getToken (username, password) {
     /* parameters:

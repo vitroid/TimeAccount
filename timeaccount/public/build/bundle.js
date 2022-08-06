@@ -1218,9 +1218,7 @@ var app = (function () {
     // for debug
     const token = writable("");
     const status = writable("Offline");
-    const BASEURL = 'http://localhost:8088';
-    // const BASEURL = 'http://www.chem.okayama-u.ac.jp:8088'
-    // const BASEURL = "https://timeaccount-test-app.herokuapp.com"
+    const BASEURL = "https://timeaccount.herokuapp.com";
     async function getToken(username, password) {
         /* parameters:
            username and password
