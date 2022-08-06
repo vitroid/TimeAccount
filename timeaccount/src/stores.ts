@@ -5,8 +5,10 @@ export const hour = writable(date.getHours());
 export const minute = writable(date.getMinutes());
 export const history = writable([])
 export const cats = writable({})
-// for debug
-export const token = writable("")
+
+import { localStorageStore } from "@babichjacob/svelte-localstorage/browser";
+export const token = localStorageStore("token", "");
+// export const token = writable("")
 
 export const status = writable("Offline")
 

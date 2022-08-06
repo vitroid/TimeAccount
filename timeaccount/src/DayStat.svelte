@@ -1,7 +1,7 @@
 <script lang="ts">
     import { history } from './stores';
     import { palettes } from './color';
-    import { statistics } from './stat'
+    import { statistics, daynames, shortnames } from './stat'
 
     let tiles = {}
     history.subscribe(events => {
@@ -12,17 +12,25 @@
         tiles = statistics( events, binw, oldest )
     })
 
-    const daynames = ["Today", "Yesterday", "2 days ago", "3 days ago", "4 days ago", "5 days ago", "6 days ago", "A week ago"]
 
+    let width;
 </script>
+
+<svelte:window bind:innerWidth={width} />
 
 <div class="container">
 {#if Object.keys(tiles).length}
 {#each Object.keys(tiles).sort() as day, i}
 <div class="ti">
-    <div class="he">{daynames[day]}</div>
+    <div class="he">
+        {#if width > 500}
+            {daynames[day]}
+        {:else}
+            {shortnames[day]}
+        {/if}
+    </div>
     {#each Object.keys(tiles[day]).sort() as cat}
-    <div class="ca" style="width:{tiles[day][cat]}px;background-color:{$palettes[cat]};">
+    <div class="ca" style="width:{tiles[day][cat]*80/1440}%;background-color:{$palettes[cat]};">
         {cat}
     </div>
     {/each}
@@ -51,7 +59,7 @@
         text-align: center;
     }
     .he {
-        width:200px;
+        width:20%;
         text-align: center;
     }
 </style>

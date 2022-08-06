@@ -26,6 +26,7 @@
     "typescript": "^4.0.0"
   },
   "dependencies": {
+    "@babichjacob/svelte-localstorage": "^0.3.0",
     "gh-pages": "^4.0.0",
     "sirv-cli": "^2.0.0",
     "svelte-select": "^4.4.7"

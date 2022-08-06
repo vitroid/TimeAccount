@@ -23,6 +23,13 @@
     "chalk" "^2.0.0"
     "js-tokens" "^4.0.0"
 
+"@babichjacob/svelte-localstorage@^0.3.0":
+  "integrity" "sha512-9kxIofTPY5brcThCzJoHtO+rvh4bcDul2n70X9osD4EJ+xUESZpy+Hs5yNE4sf9+wwuCwXRMyCUAIwDkPoj8LQ=="
+  "resolved" "https://registry.npmjs.org/@babichjacob/svelte-localstorage/-/svelte-localstorage-0.3.0.tgz"
+  "version" "0.3.0"
+  dependencies:
+    "svelte" "^3.49.0"
+
 "@bulatdashiev/svelte-slider@^1.0.3":
   "integrity" "sha512-GkVyqIjzQnqy0FQIm8wqRLIOFQBQ/Ewd381Y7KwABsSwiSu0eMYO0/8s4q/wlMDDb2/+U66rXlalaUokUfw8Vg=="
   "resolved" "https://registry.npmjs.org/@bulatdashiev/svelte-slider/-/svelte-slider-1.0.3.tgz"
@@ -1050,7 +1057,7 @@
   "resolved" "https://registry.npmjs.org/svelte-select/-/svelte-select-4.4.7.tgz"
   "version" "4.4.7"
 
-"svelte@^3.0.0", "svelte@^3.23.0", "svelte@^3.24.0", "svelte@>=3.5.0":
+"svelte@^3.0.0", "svelte@^3.23.0", "svelte@^3.24.0", "svelte@^3.49.0", "svelte@>=3.5.0":
   "integrity" "sha512-+lmjic1pApJWDfPCpUUTc1m8azDqYCG1JN9YEngrx/hUyIcFJo6VZhj0A1Ai0wqoHcEIuQy+e9tk+4uDgdtsFA=="
   "resolved" "https://registry.npmjs.org/svelte/-/svelte-3.49.0.tgz"
   "version" "3.49.0"

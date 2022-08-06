@@ -1,5 +1,10 @@
 import { accum } from './accum'
 
+
+export const daynames = ["Today", "Yesterday", "2 days ago", "3 days ago", "4 days ago", "5 days ago", "6 days ago", "A week ago"]
+export const shortnames = ["0", "-1", "-2", "-3", "-4", "-5", "-6", "-7"]
+
+
 export function statistics(events, binw, oldest){
     let tiles = {}
 
