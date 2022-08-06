@@ -1,24 +1,22 @@
-import sqlite3
+import psycopg2
+import os
 
 def _createdb():
-    con = sqlite3.connect('timeaccount.db')
+    DATABASE_URL = os.environ.get('DATABASE_URL')
 
-    cur = con.cursor()
+    with psycopg2.connect(DATABASE_URL) as con:
+        with con.cursor() as cur:
 
-    # Create table
-    cur.execute('''CREATE TABLE records (user_id integer, endtime integer, duration integer, category integer, action text)''')
-    cur.execute('''CREATE TABLE auth (username text, password text, user_id integer PRIMARY KEY)''')
-    cur.execute('''CREATE TABLE tokens (user_id integer, token text PRIMARY KEY, expire float)''')
+            # drop table
+            cur.execute('''DROP TABLE auth''')
+            # Create table
+            # cur.execute('''CREATE TABLE records (user_id integer, endtime integer, duration integer, category integer, action text)''')
+            cur.execute('''CREATE TABLE auth (username text, password text, user_id SERIAL PRIMARY KEY)''')
+            # cur.execute('''CREATE TABLE tokens (user_id integer, token text PRIMARY KEY, expire float)''')
 
-    # Save (commit) the changes
-    con.commit()
-
-    # We can also close the connection if we are done with it.
-    # Just be sure any changes have been committed or they will be lost.
-    con.close()    
 
 
 if __name__ == "__main__":
     _createdb()
-    from adduser import adduser
-    adduser(["matto", "papepo"])
+    # from adduser import adduser
+    # adduser(["matto", "papepo"])

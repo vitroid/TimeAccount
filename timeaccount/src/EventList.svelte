@@ -4,11 +4,11 @@
 
     // 日付けごとに別のカラムにする。
     let days = []
+    let events = []
 
     history.subscribe(h => {
         days = []
-
-        let events = []
+        events = []
         let today = 0
         for(let i=0; i<h.length; i++){
             let event = h[i]
@@ -26,6 +26,10 @@
             }
             events = [...events, event]
         }
+        if ( events.length > 0 ){
+            days = [...days, events]
+        }
+        console.log(days)
     })
 
 </script>

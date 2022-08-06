@@ -4,7 +4,9 @@ from logging import getLogger, DEBUG, basicConfig
 
 from collections import defaultdict
 import json
-import sqlite3
+# import sqlite3
+import os
+import psycopg2
 import hashlib
 import time
 
@@ -25,16 +27,14 @@ from pydantic import BaseModel
 # from adduser import adduser
 # adduser(["matto", "papepo-master"])
 
-
-con = sqlite3.connect('timeaccount.db')
-
+DATABASE_URL = os.environ.get('DATABASE_URL')
 app = FastAPI()
 
 # basicConfig(level=DEBUG)   # add this line
 
 origins = [
     "*",
-    "http://localhost",
+    "http://localhost:8080",
     # "http://www.chem.okayama-u.ac.jp:3000",
 ]
 
@@ -62,15 +62,17 @@ class Login(BaseModel):
 
 
 def token_to_user_id(cur, token):
-    for row in cur.execute('SELECT * FROM tokens WHERE token = :token ORDER BY rowid DESC LIMIT 1', {"token": token}):
+    cur.execute('SELECT * FROM tokens WHERE token = %s LIMIT 1', ( token, ))
+    for row in cur:
         user_id, token, expire = row
         now = time.time()
         if now < expire:
-            cur.execute('UPDATE tokens SET user_id=:user_id, token=:token, expire=:expire WHERE token = :token', {
-                "expire" : now+86400,
-                "user_id": user_id,
-                "token"  : token,
-            })
+            cur.execute('UPDATE tokens SET user_id=%s, token=%s, expire=%s WHERE token = %s', (
+                user_id,
+                token,
+                now+86400,
+                token
+            ))
             return user_id
 
 
@@ -100,33 +102,34 @@ async def get_history(token: Token, minutes: int):
     # logger = getLogger('uvicorn')
 
     # DB
-    cur = con.cursor()
-    user_id = token_to_user_id(cur, token.token)
-    if user_id is None:
-        return json.dumps([])
 
-    # old enough time to be ignored
-    if minutes == 0:
-        ancient = 0
-    else:
-        ancient = time.time() / 60 - minutes
+    with psycopg2.connect(DATABASE_URL) as con:
+        with con.cursor() as cur:
+            user_id = token_to_user_id(cur, token.token)
+            if user_id is None:
+                return json.dumps([])
 
-    rows = []
-    for row in cur.execute('SELECT * FROM records WHERE user_id = :user_id AND endtime > :ancient ORDER BY endtime DESC', 
-                            { "user_id": user_id,
-                              "ancient": ancient }):
-        # 連続したレコードのactionが同じで、時区間が重なっていれば、マージする。
-        if len(rows) > 0:
-            category, action = row[3:5]
-            if rows[-1][4] == action and rows[-1][3] == category:
-                newrange = merge(rows[-1][1:3], row[1:3])
-                if newrange is not None:
-                    rows[-1][1], rows[-1][2] = newrange
-                    continue
-        rows.append(list(row))
+            # old enough time to be ignored
+            if minutes == 0:
+                ancient = 0
+            else:
+                ancient = time.time() / 60 - minutes
 
-    return json.dumps(rows)
-    # /DB
+            rows = []
+            cur.execute('SELECT * FROM actions WHERE user_id = %s AND endtime > %s ORDER BY endtime DESC', 
+                                    ( user_id, ancient ))
+            for row in cur:
+                # 連続したレコードのactionが同じで、時区間が重なっていれば、マージする。
+                if len(rows) > 0:
+                    category, action = row[3:5]
+                    if rows[-1][4] == action and rows[-1][3] == category:
+                        newrange = merge(rows[-1][1:3], row[1:3])
+                        if newrange is not None:
+                            rows[-1][1], rows[-1][2] = newrange
+                            continue
+                rows.append(list(row))
+
+            return json.dumps(rows)
 
 
 @app.put("/v0/")
@@ -137,23 +140,24 @@ async def store_record(record: Record):
     # logger = getLogger('uvicorn')
 
     # DB
-    cur = con.cursor()
+    with psycopg2.connect(DATABASE_URL) as con:
+        with con.cursor() as cur:
 
-    # token to uid
-    user_id = token_to_user_id(cur, record.token)
-    if user_id is None:
-        return "Missing token."
+            # token to uid
+            user_id = token_to_user_id(cur, record.token)
+            if user_id is None:
+                return "Missing token."
 
-    # !!!文字列のチェックが必要。セキュリティホールになる
-    cur.execute('INSERT INTO records VALUES ( :user_id, :endtime, :duration, :category, :action ) ', {
-        "user_id" : user_id,
-        "endtime" : record.endtime,
-        "duration": record.duration,
-        "category": record.category,
-        "action"  : record.action,
-    })
-    con.commit()
-    # /DB
+            # !!!文字列のチェックが必要。セキュリティホールになる
+            cur.execute('INSERT INTO actions VALUES ( %s, %s, %s, %s, %s ) ', (
+                        user_id,
+                        record.endtime,
+                        record.duration,
+                        record.category,
+                        record.action,
+            ))
+            con.commit()
+            # /DB
 
 
 @app.post("/v0/auth/")
@@ -168,24 +172,25 @@ async def isuue_token(login: Login):
     # logger = getLogger('uvicorn')
 
     # DB
-    cur = con.cursor()
-    # logger.info(login)
-    for row in cur.execute('SELECT * FROM auth WHERE username = :username ', { "username": login.un }):
-        uname, pw, uid = row
-        if pw == login.pw:
-            # match!
-            # issue a token
-            now = time.time()
-            data = f"{uid} {now}".encode()
-            h = hashlib.new('sha256')
-            h.update(data)
-            token = h.hexdigest()
-            # 24 hours
-            cur.execute('INSERT INTO tokens VALUES ( :uid, :token, :time )', { "uid": uid, "token":token, "time":now+86400 })
-            con.commit()
-            return token
-    return ""
-    # /DB
+    with psycopg2.connect(DATABASE_URL) as con:
+        with con.cursor() as cur:
+            # logger.info(login)
+            cur.execute('SELECT * FROM auth WHERE username = %s', ( login.un, ))
+            for row in cur:
+                uname, pw, uid = row
+                if pw == login.pw:
+                    # match!
+                    # issue a token
+                    now = time.time()
+                    data = f"{uid} {now}".encode()
+                    h = hashlib.new('sha256')
+                    h.update(data)
+                    token = h.hexdigest()
+                    # 24 hours
+                    cur.execute('INSERT INTO tokens VALUES ( %s, %s, %s )', (uid, token, now+86400) )
+                    return token
+            return ""
+            # /DB
 
 
 
