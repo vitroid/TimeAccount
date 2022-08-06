@@ -29,7 +29,6 @@
         if ( events.length > 0 ){
             days = [...days, events]
         }
-        console.log(days)
     })
 
 </script>

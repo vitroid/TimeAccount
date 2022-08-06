@@ -137,7 +137,6 @@ export async function getHistory () {
             const remotelast = remote_history[0][1]
             minute.set(Math.floor(remotelast % 60))
             hour.set(Math.floor(remotelast / 60 + 9) % 24)
-            console.log(remote_history)
         }
 
         // もし、読みこんだhistoryの最終データが、クライアント上の最終データと同じ時刻であれば、

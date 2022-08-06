@@ -7,7 +7,6 @@ name = "pypi"
 fastapi = "*"
 uvicorn = "*"
 pydantic = "*"
-pymongo = "*"
 psycopg2 = "*"
 
 [dev-packages]
