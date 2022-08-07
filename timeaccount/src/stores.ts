@@ -13,6 +13,7 @@ export const token = localStorageStore("token", "");
 export const status = writable("Offline")
 
 const BASEURL = "https://timeaccount.herokuapp.com"
+// const BASEURL = "http://localhost:8088"
 
 export async function getToken (username, password) {
     /* parameters:
@@ -26,16 +27,22 @@ export async function getToken (username, password) {
        */
      
 
-    const body_ = JSON.stringify({
-        "un": username,
-        "pw": password
-    })
+    // const body_ = JSON.stringify({
+    //     "username": username,
+    //     "password": password
+    // })
+    const obj = {
+        "username": username,
+        "password": password
+    }
+    const body_ = Object.keys(obj).map((key)=>key+"="+encodeURIComponent(obj[key])).join("&");
 
-    const res = await fetch(BASEURL+'/v0/auth/', {
+    const res = await fetch(BASEURL+'/token', {
         method: "POST",
         headers: {
-            'Content-Type': 'application/json'
-          },
+            // 'Content-Type': 'application/json'
+            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+        },
         body: body_
     })
     
@@ -68,12 +75,15 @@ export async function storeAction (endtime, duration, category, action) {
     status.set( "Updating" )
 
     const body_ = JSON.stringify({
-        token: get(token),
+        // token: get(token),
         endtime: endtime,
         duration: duration,
         category: category,
         action: action
     })
+
+    let tok = get(token)
+    console.log(tok)
 
     const controller = new AbortController()
 
@@ -83,7 +93,8 @@ export async function storeAction (endtime, duration, category, action) {
     const res = await fetch(BASEURL+'/v0/', {
         method: "PUT",
         headers: {
-            'Content-Type': 'application/json'
+            'Authorization': 'Bearer '+tok.access_token,
+            'Content-Type': 'application/json',
           },
         body: body_,
         signal: controller.signal // 5 sec
@@ -106,9 +117,7 @@ export async function getHistory () {
         This is called every one minute in Main.svelte
      */
 
-    const body_ = JSON.stringify({
-        "token": get(token)
-    })
+    let tok = get(token)
 
     const controller = new AbortController()
 
@@ -119,9 +128,8 @@ export async function getHistory () {
     const res = await fetch(BASEURL+'/v0/query/'+duration, {
         method: "POST",
         headers: {
-            'Content-Type': 'application/json'
+            'Authorization': 'Bearer '+tok.access_token
           },
-        body: body_,
         signal: controller.signal // 5 sec
     }).catch(()=>{status.set("Offline")})
       

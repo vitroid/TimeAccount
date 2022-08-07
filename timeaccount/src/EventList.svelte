@@ -6,6 +6,7 @@
     // 日付けごとに別のカラムにする。
     let days = []
     let events = []
+    const JSTFIX = 9*60
 
     history.subscribe(h => {
         days = []
@@ -13,7 +14,7 @@
         let today = 0
         for(let i=0; i<h.length; i++){
             let event = h[i]
-            let daycode = Math.floor(event[1] / (24*60) )
+            let daycode = Math.floor((event[1]+JSTFIX) / (24*60) )
             if ( today == 0 ){
                 today = daycode
             }
