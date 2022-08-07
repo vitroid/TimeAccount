@@ -6,5 +6,13 @@
 
 </script>
 
-Color theme
-<Slider max="360" step="10" bind:value={$huerange} range order />
+<div>
+    Color theme
+    <Slider max="360" step="10" bind:value={$huerange} range order />
+</div>
+
+<style>
+    div {
+        padding: 10px;
+    }
+</style>

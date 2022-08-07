@@ -45,6 +45,7 @@
         flex-flow: column nowrap;
         justify-content: flex-start;
         align-items: flex-start;
+        padding: 10px;
         /* overflow: auto; */
     }
     .ti {

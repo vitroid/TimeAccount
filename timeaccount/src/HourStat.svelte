@@ -20,6 +20,7 @@
 
 </script>
 
+<div class="container">
 {#if Object.keys(tiles).length}
 {#each Array(24) as delta, i}
 <div class="ti">
@@ -34,8 +35,13 @@
 </div>
 {/each}
 {/if}
+</div>
+
 
 <style>
+    .container {
+        padding: 10px;
+    }
     .ti {
         display: flex;
         text-align: center;

@@ -62,13 +62,12 @@
 
 <style>
     .container {
-        /* max-width: 800px; */
-        max-height: 500px;
         display: flex;
         flex-flow: row nowrap;
         justify-content: flex-start;
         align-items: flex-start;
         overflow: auto;
+        padding: 10px;
     }
     .list {
         display:  flex;

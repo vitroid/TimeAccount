@@ -26,11 +26,13 @@
 </script>
 
 <main>
-	<LogoutComponent />
-	<span>{$status}</span>
-	<p>
-		<Hour />時<Minute />分以降、何をしていましたか?
-	</p>
+	<div class="statusbar">
+		<p>
+			<Hour />時<Minute />分以降、何をしていましたか?
+		</p>
+		<div class="status">{$status}</div>
+		<LogoutComponent />
+	</div>
 	{#each Object.keys($cats) as id}
 	<Category {id}/>
 	{/each}
@@ -63,10 +65,25 @@
 </main>
 
 <style>
+	main {
+		max-width: 800px;
+		height: 100%;
+		margin: auto;
+		-webkit-filter:drop-shadow(1px 3px 5px rgba(0, 0, 0, 0.2));
+		-moz-filter:drop-shadow(1px 3px 5px rgba(0, 0, 0, 0.2));
+		-ms-filter:drop-shadow(1px 3px 5px rgba(0, 0, 0, 0.2));
+		filter:drop-shadow(1px 3px 5px rgba(0, 0, 0, 0.2));
+		background-color: white;
+	}
 	p {
 		margin: 0;
 	}
-	span {
+	.statusbar {
+		display: flex;
+		flex-wrap: nowrap;
+		justify-content: space-between;
+	}
+	.status {
 		color: #f00;
 	}
 </style>
