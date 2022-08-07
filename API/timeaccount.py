@@ -199,6 +199,7 @@ async def store_action(record: Record, token: str = Depends(oauth2_scheme)):
 
 
 # taken and modified from https://fastapi.tiangolo.com/ja/tutorial/security/first-steps/
+# この仕掛けでは、token自身が情報を蓄えているので、サーバ側はtokenの寿命等を保管しておく必要がない。
 from datetime import datetime, timedelta
 from typing import Union
 
