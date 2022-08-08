@@ -2,12 +2,9 @@
 """
 from logging import getLogger, DEBUG, basicConfig
 
-from collections import defaultdict
 import json
-# import sqlite3
 import os
 import psycopg2
-import hashlib
 import time
 
 import uvicorn
@@ -46,17 +43,14 @@ class Action(BaseModel):
     category: int     # freely assignable
     action:     str     # label for the button
 
-# class Token(BaseModel):
-#     token:  str
-
 class Login(BaseModel):
     username: str
     password: str
 
 
 
-@app.post("/v0/query/{minutes}")
-async def get_history(minutes: int, token: str = Depends(oauth2_scheme)):
+@app.get("/v0/history/{minutes}")
+async def history(minutes: int, token: str = Depends(oauth2_scheme)):
     """
     It returns the action history of the user.
 
@@ -86,7 +80,7 @@ async def get_history(minutes: int, token: str = Depends(oauth2_scheme)):
         with con.cursor() as cur:
             user = await get_current_user(token)
             # logger.error(user)
-            # user_id = token_to_user_id(cur, token.token)
+
             if user is None:
                 return json.dumps([])
 
@@ -139,40 +133,6 @@ async def store_action(action: Action, token: str = Depends(oauth2_scheme)):
             # /DB
 
 
-# @app.post("/v0/auth/")
-# async def isuue_token(login: Login):
-#     """
-#     It receives the username and password, compare them with the data in the user DB, and issue a new token.
-#     The token is valid 24 hours after the last access.
-#     All the other APIs are accessed via this token.
-
-#     There is no method to add new user to the DB.
-#     """
-#     # logger = getLogger('uvicorn')
-
-#     # DB
-#     with psycopg2.connect(DATABASE_URL) as con:
-#         with con.cursor() as cur:
-#             # logger.info(login)
-#             cur.execute('SELECT * FROM auth WHERE username = %s', ( login.username, ))
-#             for row in cur:
-#                 uname, pw, uid = row
-#                 if pw == login.password:
-#                     # match!
-#                     # issue a token
-#                     now = time.time()
-#                     data = f"{uid} {now}".encode()
-#                     h = hashlib.new('sha256')
-#                     h.update(data)
-#                     token = h.hexdigest()
-#                     # 24 hours
-#                     cur.execute('INSERT INTO tokens VALUES ( %s, %s, %s )', (uid, token, now+86400) )
-#                     return token
-#             return ""
-#             # /DB
-
-
-
 # taken and modified from https://fastapi.tiangolo.com/ja/tutorial/security/first-steps/
 # この仕掛けでは、token自身が情報を蓄えているので、サーバ側はtokenの寿命等を保管しておく必要がない。
 from datetime import datetime, timedelta
@@ -196,7 +156,7 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    username: Union[str, None] = None
+    user_id: Union[str, None] = None
 
 
 class User(BaseModel):
@@ -224,7 +184,7 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-def get_user(username: str):
+def get_user(username: str = None, user_id: int = None):
     """
     userが存在すれば、そのデータベースレコードの内容を返す。
     なければ何も返さない(None)
@@ -232,34 +192,28 @@ def get_user(username: str):
     with psycopg2.connect(DATABASE_URL) as con:
         with con.cursor() as cur:
             # logger.info(login)
-            cur.execute('SELECT * FROM auth WHERE username = %s', ( username, ))
-            for row in cur:
-                uname, pw, uid = row
-                return UserInDB(**{
-                    "user_id": uid,
-                    "username": uname,
-                    "hashed_password": pw,
-                })
-            #     if pw == login.password:
-            #         # match!
-            #         # issue a token
-            #         now = time.time()
-            #         data = f"{uid} {now}".encode()
-            #         h = hashlib.new('sha256')
-            #         h.update(data)
-            #         token = h.hexdigest()
-            #         # 24 hours
-            #         cur.execute('INSERT INTO tokens VALUES ( %s, %s, %s )', (uid, token, now+86400) )
-            #         return token
-            # return ""
-
-    # if username in db:
-    #     user_dict = db[username]
-    #     return UserInDB(**user_dict)
+            if username is not None:
+                cur.execute('SELECT * FROM auth WHERE username = %s', ( username, ))
+                for row in cur:
+                    uname, pw, uid = row
+                    return UserInDB(**{
+                        "user_id": uid,
+                        "username": uname,
+                        "hashed_password": pw,
+                    })
+            if user_id is not None:
+                cur.execute('SELECT * FROM auth WHERE user_id = %s', ( user_id, ))
+                for row in cur:
+                    uname, pw, uid = row
+                    return UserInDB(**{
+                        "user_id": uid,
+                        "username": uname,
+                        "hashed_password": pw,
+                    })
 
 
 def authenticate_user(username: str, password: str):
-    user = get_user(username)
+    user = get_user(username=username)
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
@@ -286,13 +240,13 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
+        user_id: str = payload.get("sub")
+        if user_id is None:
             raise credentials_exception
-        token_data = TokenData(username=username)
+        token_data = TokenData(user_id=user_id)
     except JWTError:
         raise credentials_exception
-    user = get_user(username=token_data.username)
+    user = get_user(user_id=int(token_data.user_id))
     if user is None:
         raise credentials_exception
     return user
@@ -315,7 +269,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username}, 
+        data={"sub": f"{user.user_id}"}, 
         expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}

@@ -52,7 +52,6 @@ export async function getToken (username, password) {
     }
 
     let result = await res.json()
-    // console.log("RESULT:"+result)
     if ( result != "" ){
         token.set(result)
         return result
@@ -83,7 +82,6 @@ export async function storeAction (endtime, duration, category, action) {
     })
 
     let tok = get(token)
-    console.log(tok)
 
     const controller = new AbortController()
 
@@ -129,6 +127,10 @@ export async function getHistory () {
      */
 
     let tok = get(token)
+    if ( ! token ){
+        status.set("No token")
+        return
+    }
 
     const controller = new AbortController()
 
@@ -136,8 +138,8 @@ export async function getHistory () {
     const timeoutId = setTimeout(() => controller.abort(), 5000)
 
     const duration = "10080" // 10080 minutes == 1 week
-    const res = await fetch(BASEURL+'/v0/query/'+duration, {
-        method: "POST",
+    const res = await fetch(BASEURL+'/v0/history/'+duration, {
+        method: "GET",
         headers: {
             'Authorization': 'Bearer '+tok.access_token
           },
