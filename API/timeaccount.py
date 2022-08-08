@@ -18,14 +18,6 @@ from pydantic import BaseModel
 
 # basicConfig(level=DEBUG)   # add this line
 
-# from createdb import _createdb
-# import os
-# if os.path.exists("timeaccount.db"):
-#     os.remove("timeaccount.db")
-#     # return "DB exists."
-# _createdb()
-# from adduser import adduser
-# adduser(["matto", "papepo-master"])
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 app = FastAPI()
@@ -37,7 +29,6 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 origins = [
     "*",
     "http://localhost:8080",
-    # "http://www.chem.okayama-u.ac.jp:3000",
 ]
 
 app.add_middleware(
@@ -48,7 +39,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-class Record(BaseModel):
+class Action(BaseModel):
     # token:    str     # to access API
     endtime:  int     # unixtime in minutes
     duration: int     # minutes
@@ -62,20 +53,6 @@ class Login(BaseModel):
     username: str
     password: str
 
-
-# def token_to_user_id(cur, token):
-#     cur.execute('SELECT * FROM tokens WHERE token = %s LIMIT 1', ( token, ))
-#     for row in cur:
-#         user_id, token, expire = row
-#         now = time.time()
-#         if now < expire:
-#             cur.execute('UPDATE tokens SET user_id=%s, token=%s, expire=%s WHERE token = %s', (
-#                 user_id,
-#                 token,
-#                 now+86400,
-#                 token
-#             ))
-#             return user_id
 
 
 @app.post("/v0/query/{minutes}")
@@ -137,7 +114,7 @@ async def get_history(minutes: int, token: str = Depends(oauth2_scheme)):
 
 
 @app.put("/v0/")
-async def store_action(record: Record, token: str = Depends(oauth2_scheme)):
+async def store_action(action: Action, token: str = Depends(oauth2_scheme)):
     """
     It stores an action to the DB.
     """
@@ -148,17 +125,15 @@ async def store_action(record: Record, token: str = Depends(oauth2_scheme)):
         with con.cursor() as cur:
             user = await get_current_user(token)
 
-            # token to uid
-            # user_id = token_to_user_id(cur, record.token)
             if user is None:
                 return "Missing token."
 
             cur.execute('INSERT INTO actions VALUES ( %s, %s, %s, %s, %s ) ', (
                         user.user_id,
-                        record.endtime,
-                        record.duration,
-                        record.category,
-                        record.action,
+                        action.endtime,
+                        action.duration,
+                        action.category,
+                        action.action,
             ))
             return "OK"
             # /DB
@@ -212,7 +187,7 @@ from passlib.context import CryptContext
 # openssl rand -hex 32
 SECRET_KEY = "999fd16a2e33e86ec8452845ce17cd6f0da1139a96ad16f3a15ccc6927a1a5cf"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 120
 
 
 class Token(BaseModel):
@@ -340,7 +315,8 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        data={"sub": user.username}, 
+        expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
 

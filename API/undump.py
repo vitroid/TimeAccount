@@ -43,6 +43,8 @@ def inject(history):
             # /DB
 
 if __name__ == "__main__":
+    # 迂闊に使わないように、stop codeを入れておく。
+    assert False
     history = dump("timeaccount.db")
     print(history)
     h2 = dump_heroku()

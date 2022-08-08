@@ -14,9 +14,16 @@ $ git push heroku master
 $ curl https://timeaccount.herokuapp.com/
 ```
 
-初回はこれでいいんだが、このフォルダーに書かれた.gitの情報は、下のフォルダーのgit updateで消えてしまいそうな気がする。
-その場合、再接続は面倒そう。herokuからpull/cloneできるのかもね。それなら、もはやTimeAccount/の中で開発しないほうがいいかも。
+二回目からは、
+```
+$ git add ...
+$ git commit -m.
+$ git push heroku master
+```
+だけでいい。
 
-そういや、appの中ではDBのアクセス方法について何も書かず、ENVVARを参照するだけなのだが、問題なく動いたということは、この書き方でよかったのか。
+appの中ではDBのアクセス方法について何も書かず、ENVVARを参照するだけなのだが、問題なく動いたということは、この書き方でよかったのか。
 
-次は、github pages上にあるsvelteを改変するか。
+# ToDos
+
+* データが増えてきた時の対処。とはいえ、tokenをデータベースに蓄えないので、あとは行動履歴をいつまで残すかだけ。
