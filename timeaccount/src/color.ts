@@ -1,6 +1,10 @@
 import { writable, get } from 'svelte/store';
 export const palettes = writable([])
-export const huerange = writable([0,54])
+// export const huerange = writable([0,54])
+
+import { localStorageStore } from "@babichjacob/svelte-localstorage/browser";
+export const huerange = localStorageStore("huerange", [0,54]);
+
 
 export function hslToHex(h, s, l) {
     l /= 100;

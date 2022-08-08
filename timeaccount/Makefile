@@ -15,11 +15,4 @@ inspect:
 deploy-gh-pages:
 	node ./gh-pages.js
 
-# github側のpagesの設定で、ブランチ(ここではpages)を指定する(デフォルトだとgh-pagesになってるがそれは使ってしまった)
-# 中から自前のAPIをhttpsではなくhttpでアクセスしているために、APIへのアクセスを拒否された。
-# pagesで動かそうと思うとAPI側も同時に作業しないといけないのか・・・道は遠い。
-
-# https://www.devsamples.com/javascript/svelte/deploy-svelte-app-gh-pages
-# これでうまくいくはず。
-# APIのほうは別に設けるしかない。いずれはそれも外部クラウド上に作るのだろう。
-
+# UIの試行は、make inspectでローカルで確認できるので、UIの改良はやりやすい。

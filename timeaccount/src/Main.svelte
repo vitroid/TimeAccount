@@ -1,7 +1,6 @@
 <script>
 	import { Tabs, TabList, TabPanel, Tab } from './Components/Tabs/tabs.js';
 	import Category from "./Category.svelte"
-	import ColorSelector from "./ColorSelector.svelte"
 	import Hour from "./Hour.svelte"
 	import Minute from "./Minute.svelte"
 	import HourStat from "./HourStat.svelte";
@@ -9,6 +8,9 @@
 	import EventList from "./EventList.svelte"
 	import LogoutComponent from './Components/LogoutComponent.svelte';
     import { cats, getHistory, status } from './stores.ts'
+	// for modal
+	import Modal from "./Components/Modal.svelte";
+	import SettingButton from './SettingButton.svelte';
 
 	getHistory()
 
@@ -23,6 +25,8 @@
 		}
 		$cats[c] = {}
 	}
+
+
 </script>
 
 <main>
@@ -31,19 +35,22 @@
 			<Hour />時<Minute />分以降、何をしていましたか?
 		</p>
 		<div class="status">{$status}</div>
-		<LogoutComponent />
+		<div class="tools">
+			<Modal>
+				<SettingButton />
+			</Modal>
+			<LogoutComponent />
+		</div>
 	</div>
 	{#each Object.keys($cats) as id}
 	<Category {id}/>
 	{/each}
 	<button name="name" on:click={addCategory} >+ New Category</button>
-	
 	<Tabs>
 		<TabList>
 			<Tab>Events</Tab>
 			<Tab>Hourly stat</Tab>
 			<Tab>Daily stat</Tab>
-			<Tab>Settings</Tab>
 		</TabList>
 	
 		<TabPanel>
@@ -56,10 +63,6 @@
 	
 		<TabPanel>
 			<DayStat />
-		</TabPanel>
-
-		<TabPanel>
-			<ColorSelector />
 		</TabPanel>
 	</Tabs>
 </main>
@@ -82,6 +85,11 @@
 		display: flex;
 		flex-wrap: nowrap;
 		justify-content: space-between;
+	}
+	.tools {
+		display: flex;
+		flex-wrap: nowrap;
+		justify-content: right;
 	}
 	.status {
 		color: #f00;

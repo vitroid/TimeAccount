@@ -98,10 +98,21 @@ export async function storeAction (endtime, duration, category, action) {
           },
         body: body_,
         signal: controller.signal // 5 sec
-    }).catch(()=>{status.set("Offline")})
+    }).catch(()=>{
+        status.set("Offline")
+    })
       
-    if ( (typeof res === 'undefined') || (res.status != 200) ){
-        status.set("Uncertain")
+    if ( typeof res === 'undefined' ){
+        status.set("Offline?")
+        return
+    }
+    if ( res.status == 401 ){
+        status.set("Unauthorized")
+        token.set("")
+        return
+    }
+    if (res.status != 200) {
+        status.set("Unknown error")
         return
     }
     status.set( "" )
@@ -133,8 +144,17 @@ export async function getHistory () {
         signal: controller.signal // 5 sec
     }).catch(()=>{status.set("Offline")})
       
-    if ( (typeof res === 'undefined') || (res.status != 200) ){
-        status.set("Uncertain")
+    if ( typeof res === 'undefined' ){
+        status.set("Offline?")
+        return
+    }
+    if ( res.status == 401 ){
+        status.set("Unauthorized")
+        token.set("")
+        return
+    }
+    if (res.status != 200) {
+        status.set("Unknown error")
         return
     }
     status.set( "" )
