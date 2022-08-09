@@ -12,7 +12,7 @@ inspect:
 	open public/index.html
 
 # それをgithub pagesのページとしてdeployする。
-deploy-gh-pages:
+deploy:
 	node ./gh-pages.js
 
 # UIの試行は、make inspectでローカルで確認できるので、UIの改良はやりやすい。

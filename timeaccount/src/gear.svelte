@@ -1,6 +1,6 @@
 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 60.3 60.3" style="enable-background:new 0 0 60.3 60.3;" xml:space="preserve" width="30px">
-<style type="text/css">
+<style>
 	.st0{fill:#8A8A8A;}
 </style>
 <g id="Background">

@@ -1,8 +1,6 @@
 <script>
-	// import { getUserDetails } from '../hooks/auth';
-	// import { store } from '../hooks/auth';
-    import { token, getToken } from '../stores';
-    import { get } from "svelte/store";
+    import { getToken } from '../stores';
+	import GoogleAuth from './GoogleAuth.svelte'
 
 	let username = '';
 	let password = '';
@@ -42,8 +40,13 @@
 		<small>{error}</small>
 	</div>
 
+	<GoogleAuth />
 </form>
 
+
+
+<!-- <FacebookAuth appId="your-facebook-app-id" on:auth-success={e => console.dir(e.detail.user)} /> -->
+	
 <style>
     form {
         max-width: 480px;
