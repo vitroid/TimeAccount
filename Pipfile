@@ -11,6 +11,7 @@ psycopg2 = "*"
 python-multipart = "*"
 passlib = {extras = ["bcrypt"], version = "*"}
 python-jose = {extras = ["cryptography"], version = "*"}
+authlib = "*"
 
 [dev-packages]
 

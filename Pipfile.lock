@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "2b93690ad7e358cbd425673a77990af0d0f4e54a0b35a1c835275ac2398eab99"
+            "sha256": "4548ae81cd513ac922d04b89434b052bc98858205031c6ae295e624be6242eee"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -23,6 +23,14 @@
             ],
             "markers": "python_full_version >= '3.6.2'",
             "version": "==3.6.1"
+        },
+        "authlib": {
+            "hashes": [
+                "sha256:1286e2d5ef5bfe5a11cc2d0a0d1031f0393f6ce4d61f5121cfe87fa0054e98bd",
+                "sha256:6e74a4846ac36dfc882b3cc2fbd3d9eb410a627f2f2dc11771276655345223b1"
+            ],
+            "index": "pypi",
+            "version": "==1.0.1"
         },
         "bcrypt": {
             "hashes": [
@@ -142,6 +150,7 @@
                 "sha256:f7a6de3e98771e183645181b3627e2563dcde3ce94a9e42a3f427d2255190327",
                 "sha256:f8c0a6e9e1dd3eb0414ba320f85da6b0dcbd543126e30fcc546e7372a7fbf3b9"
             ],
+            "markers": "python_version >= '3.6'",
             "version": "==37.0.4"
         },
         "ecdsa": {
@@ -325,7 +334,7 @@
                 "sha256:25642c956049920a5aa49edcdd6ab1e06d7e5d467fc00e0506c44ac86fbfca02",
                 "sha256:e6d2677a32f47fc7eb2795db1dd15c1f34eff616bcaf2cfb5e997f854fa1c4a6"
             ],
-            "markers": "python_version < '3.10'",
+            "markers": "python_version >= '3.7'",
             "version": "==4.3.0"
         },
         "uvicorn": {
