@@ -5,19 +5,17 @@ from logging import DEBUG, basicConfig, getLogger
 
 import psycopg2
 import uvicorn
+from authlib.integrations.starlette_client import OAuth, OAuthError
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
-
-
 # test use of authlib
 from starlette.config import Config
-from starlette.requests import Request
 from starlette.middleware.sessions import SessionMiddleware
+from starlette.requests import Request
 from starlette.responses import HTMLResponse, RedirectResponse
-from authlib.integrations.starlette_client import OAuth, OAuthError
 
 app = FastAPI()
 api = FastAPI(openapi_prefix="/v0")
@@ -51,6 +49,7 @@ origins = [
     "*",
     # ここには、FrontEndのURIが書かれる。
     "http://localhost:8080",  # required.
+    "http://timeaccount.herokuapp.com",
     # あと、Google authとのやりとりのために、
     "http://localhost:8088",
     "https://accounts.google.com",
@@ -320,26 +319,25 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 #     return 'Hello World!'
 
 #authlib+google
-@app.get('/v0/glogin')
+@api.route('/glogin')
 async def google_login(request: Request):
-    logger = getLogger()
+    logger=getLogger()
     redirect_uri = request.url_for('google_auth')
-    logger.info(redirect_uri)
+    logger.warning(f"GLOGIN--{redirect_uri}------------------")
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 #authlib+google
-@app.get('/v0/gauth')
+@api.route('/gauth')
 async def google_auth(request: Request):
-    logger = getLogger()
-    logger.info("AUTH")
-    logger.info(request.headers)
+    logger=getLogger()
     token = await oauth.google.authorize_access_token(request)
-    return token
+    logger.warning("GAUTH--------------------")
+    return RedirectResponse(url='/')
 
-@app.get('/v0/glogout')
+@api.route('/glogout')
 async def google_logout(request: Request):
     request.session.pop('user', None)
-    # return RedirectResponse(url='/')
+    return RedirectResponse(url='/')
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8088)) )

@@ -12,8 +12,8 @@ export const token = localStorageStore("token", "");
 
 export const status = writable("Offline")
 
-const BASEURL = "https://timeaccount.herokuapp.com"
-// const BASEURL = "http://localhost:8088"
+// const BASEURL = "https://timeaccount.herokuapp.com"
+const BASEURL = "http://localhost:8088"
 
 export async function getToken (username, password) {
     /* parameters:
@@ -220,30 +220,33 @@ export async function getHistory () {
 
 export async function googleLogin () {
     /* parameters:
- 
+
        then find the user id
        and make a new token
 
        returns:
        token
        */
-     
 
-    const res = await fetch(BASEURL+'/v0/glogin', {
-        method: "GET",
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-        },
-        mode: "cors",
-    })
-    
-    console.log(res)
+
+    //    const res = await fetch(BASEURL+'/v0/glogin', {
+    const res = await fetch('/v0/glogin',
+    // {
+        // method: "GET",
+        // headers: {
+        //     'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+        // },
+        // mode: "cors",
+    // }
+    )
+
     // もし不成功なら空文字列を返す。
     if ( res.status != 200 ){
         return ""
     }
 
     let result = await res.json()
+    console.log(result)
     if ( result != "" ){
         token.set(result)
         return result

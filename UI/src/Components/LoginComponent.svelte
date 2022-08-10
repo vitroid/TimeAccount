@@ -1,6 +1,6 @@
 <script>
     import { getToken } from '../stores';
-	import GoogleAuth from './GoogleAuth.svelte'
+    import GoogleAuth from './GoogleAuth.svelte';
 	// import { GoogleAuth, FacebookAuth } from '@beyonk/svelte-social-auth'
 
 	let username = '';
@@ -42,11 +42,10 @@
 	</div>
 
 	<GoogleAuth />
-	<!-- <GoogleAuth clientId="494706648163-hdadjbj2pmvn3l6tbb9mbmbnnb6onarn.apps.googleusercontent.com" on:auth-success={e => console.dir(e.detail.user)} /> -->
 </form>
 
 
-	
+
 <style>
     form {
         max-width: 480px;
