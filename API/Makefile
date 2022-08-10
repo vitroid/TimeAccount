@@ -9,11 +9,10 @@ test-query:
 	curl -X POST http://localhost:8000/v0/query/999 -H "Content-Type: application/json" -d '{"token":"c66582a46ae2cf85be4db138319672c1108aa2149ad63e8befeab5d5d48af6bf"}' -v
 
 
-sync:
-	rsync -av ../timeaccount/public .
-
 routine:
-	git add timeaccount.py
+	cd ../UI && make build
+	git add timeaccount.py public
+
 deploy:
 	git commit -m.
 	git push heroku master

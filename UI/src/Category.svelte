@@ -1,17 +1,25 @@
 <script lang="ts">
     import { palettes } from './color';
-    import { hour, minute, history, storeAction, cats } from './stores'
+    import { cats,history,hour,minute,storeAction } from './stores';
     // Categoryとは、テキスト入力枠とボタンのセットである。
     export let id;
 
     // export let whatUdid;
     let buttons
-    let sorted
+    let sorted = []
+
+    // test if obj is a hash or not
+    function isObject ( obj ) {
+        return obj && (typeof obj  === "object");
+    }
 
     cats.subscribe( value=> {
-        if ( Object.keys(value).length > 0 ){
+        sorted = []
+        if ( isObject(value) ){
             buttons = value[id]
-            sorted = Object.keys(buttons).sort((a,b)=>buttons[b] - buttons[a])
+            if ( isObject(buttons) ){
+                sorted = Object.keys(buttons).sort((a,b)=>buttons[b] - buttons[a])
+            }
         }
     })
 
@@ -62,7 +70,6 @@
     }
 
 
-    // ヒストリーを読みこんで、ボタンを再配置する機能が欲しい。
 </script>
 
 <p style:background-color={$palettes[id]} >
