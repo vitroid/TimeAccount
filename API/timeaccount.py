@@ -1,14 +1,11 @@
-"""
-"""
-from logging import getLogger, DEBUG, basicConfig
-
 import json
 import os
-import psycopg2
 import time
+from logging import DEBUG, basicConfig, getLogger
 
+import psycopg2
 import uvicorn
-from fastapi import FastAPI, Depends
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
@@ -50,15 +47,15 @@ class Login(BaseModel):
 
 
 @app.get("/v0/history/{minutes}")
-async def history(minutes: int, token: str = Depends(oauth2_scheme)):
-    """
-    It returns the action history of the user.
+async def history(minutes: int, token: str = Depends(oauth2_scheme)) -> str:
+    """It returns the action history of the user.
 
-    [Parameters]
-    Minutes: select all events if it is zero, otherwise select events within {minutes}.
+    Args:
+        minutes (int): select all events if it is zero, otherwise select events within {minutes}.
+        token (str, optional): auth token. Defaults to Depends(oauth2_scheme).
 
-    [Returns]
-    Event list in JSON format.
+    Returns:
+        str: History data in JSON format.
     """
 
     def merge(r1, r2):
@@ -91,7 +88,7 @@ async def history(minutes: int, token: str = Depends(oauth2_scheme)):
                 ancient = time.time() / 60 - minutes
 
             rows = []
-            cur.execute('SELECT * FROM actions WHERE user_id = %s AND endtime > %s ORDER BY endtime DESC', 
+            cur.execute('SELECT * FROM actions WHERE user_id = %s AND endtime > %s ORDER BY endtime DESC',
                                     ( user.user_id, ancient ))
             for row in cur:
                 # 連続したレコードのactionが同じで、時区間が重なっていれば、マージする。
@@ -114,7 +111,6 @@ async def store_action(action: Action, token: str = Depends(oauth2_scheme)):
     """
     # logger = getLogger('uvicorn')
 
-    # DB
     with psycopg2.connect(DATABASE_URL) as con:
         with con.cursor() as cur:
             user = await get_current_user(token)
@@ -130,7 +126,6 @@ async def store_action(action: Action, token: str = Depends(oauth2_scheme)):
                         action.action,
             ))
             return "OK"
-            # /DB
 
 
 # taken and modified from https://fastapi.tiangolo.com/ja/tutorial/security/first-steps/
@@ -269,7 +264,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": f"{user.user_id}"}, 
+        data={"sub": f"{user.user_id}"},
         expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
