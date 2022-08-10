@@ -7,3 +7,7 @@ timeaccount.db
 .vscode/targets.log
 UI/.vscode/settings.json
 API/public/build/
+API/.env
+API/*.apps.googleusercontent.com.json
+API/credentials.json
+API/test.py
