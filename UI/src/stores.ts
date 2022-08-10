@@ -1,4 +1,4 @@
-import { writable, get } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 
 const date = new Date()
 export const hour = writable(date.getHours());
@@ -25,7 +25,7 @@ export async function getToken (username, password) {
        returns:
        token
        */
-     
+
 
     // const body_ = JSON.stringify({
     //     "username": username,
@@ -37,7 +37,7 @@ export async function getToken (username, password) {
     }
     const body_ = Object.keys(obj).map((key)=>key+"="+encodeURIComponent(obj[key])).join("&");
 
-    const res = await fetch(BASEURL+'/token', {
+    const res = await fetch(BASEURL+'/v0/token', {
         method: "POST",
         headers: {
             // 'Content-Type': 'application/json'
@@ -45,7 +45,7 @@ export async function getToken (username, password) {
         },
         body: body_
     })
-    
+
     // もし不成功なら空文字列を返す。
     if ( res.status != 200 ){
         return ""
@@ -99,7 +99,7 @@ export async function storeAction (endtime, duration, category, action) {
     }).catch(()=>{
         status.set("Offline")
     })
-      
+
     if ( typeof res === 'undefined' ){
         status.set("Offline?")
         return
@@ -145,7 +145,7 @@ export async function getHistory () {
           },
         signal: controller.signal // 5 sec
     }).catch(()=>{status.set("Offline")})
-      
+
     if ( typeof res === 'undefined' ){
         status.set("Offline?")
         return

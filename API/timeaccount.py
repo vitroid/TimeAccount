@@ -8,6 +8,7 @@ import uvicorn
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 # basicConfig(level=DEBUG)   # add this line
@@ -15,6 +16,9 @@ from pydantic import BaseModel
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 app = FastAPI()
+api = FastAPI(openapi_prefix="/v0")
+app.mount("/v0", api)
+app.mount("/", StaticFiles(directory="./public", html=True), name="static")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -46,7 +50,7 @@ class Login(BaseModel):
 
 
 
-@app.get("/v0/history/{minutes}")
+@api.get("/history/{minutes}")
 async def history(minutes: int, token: str = Depends(oauth2_scheme)) -> str:
     """It returns the action history of the user.
 
@@ -104,7 +108,7 @@ async def history(minutes: int, token: str = Depends(oauth2_scheme)) -> str:
             return json.dumps(rows)
 
 
-@app.put("/v0/")
+@api.put("/")
 async def store_action(action: Action, token: str = Depends(oauth2_scheme)):
     """
     It stores an action to the DB.
@@ -253,7 +257,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 #     return current_user
 
 
-@app.post("/token", response_model=Token)
+@api.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(form_data.username, form_data.password)
     if not user:
@@ -281,9 +285,9 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 
 
 
-@app.get('/')
-def hello():
-    return 'Hello World!'
+# @app.get('/')
+# def hello():
+#     return 'Hello World!'
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8088)) )

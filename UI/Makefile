@@ -9,10 +9,10 @@ build:
 	npm run build
 
 inspect:
-	open public/index.html
+	open ../API/public/index.html
 
 # それをgithub pagesのページとしてdeployする。
-deploy-gh-pages:
-	node ./gh-pages.js
+# deploy-gh-pages:
+# 	node ./gh-pages.js
 
 # UIの試行は、make inspectでローカルで確認できるので、UIの改良はやりやすい。

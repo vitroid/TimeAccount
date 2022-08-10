@@ -5,4 +5,5 @@ timeaccount.db
 .vscode/dryrun.log
 .vscode/settings.json
 .vscode/targets.log
-timeaccount/.vscode/settings.json
+UI/.vscode/settings.json
+API/public/build/
