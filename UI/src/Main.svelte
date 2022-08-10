@@ -1,14 +1,14 @@
 <script>
-	import { Tabs, TabList, TabPanel, Tab } from './Components/Tabs/tabs.js';
-	import Category from "./Category.svelte"
-	import Hour from "./Hour.svelte"
-	import Minute from "./Minute.svelte"
-	import HourStat from "./HourStat.svelte";
-	import DayStat from "./DayStat.svelte";
-	import EventList from "./EventList.svelte"
+	import Category from "./Category.svelte";
 	import LogoutComponent from './Components/LogoutComponent.svelte';
-    import { cats, getHistory, status } from './stores.ts'
-	// for modal
+	import { Tab,TabList,TabPanel,Tabs } from './Components/Tabs/tabs.js';
+	import DayStat from "./DayStat.svelte";
+	import EventList from "./EventList.svelte";
+	import Hour from "./Hour.svelte";
+	import HourStat from "./HourStat.svelte";
+	import Minute from "./Minute.svelte";
+	import { cats,getHistory,status } from './stores.ts';
+// for modal
 	import Modal from "./Components/Modal.svelte";
 	import SettingButton from './SettingButton.svelte';
 
@@ -52,15 +52,15 @@
 			<Tab>Hourly stat</Tab>
 			<Tab>Daily stat</Tab>
 		</TabList>
-	
+
 		<TabPanel>
 			<EventList />
 		</TabPanel>
-	
+
 		<TabPanel>
 			<HourStat />
 		</TabPanel>
-	
+
 		<TabPanel>
 			<DayStat />
 		</TabPanel>
@@ -70,7 +70,7 @@
 <style>
 	main {
 		max-width: 800px;
-		height: 100%;
+		/* height: 100%; */
 		margin: auto;
 		-webkit-filter:drop-shadow(1px 3px 5px rgba(0, 0, 0, 0.2));
 		-moz-filter:drop-shadow(1px 3px 5px rgba(0, 0, 0, 0.2));
