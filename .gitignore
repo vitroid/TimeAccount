@@ -11,3 +11,5 @@ API/.env
 API/*.apps.googleusercontent.com.json
 API/credentials.json
 API/test.py
+
+API/demo-oauth-client/
