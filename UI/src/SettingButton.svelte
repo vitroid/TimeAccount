@@ -6,7 +6,6 @@
   const showSettingDialog = () => open(SettingDialog);
 </script>
 
-<!-- <Gear /> -->
 <button on:click={showSettingDialog}><Gear /></button>
 
 <style>

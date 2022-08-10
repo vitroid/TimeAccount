@@ -11,23 +11,51 @@ from fastapi.security import OAuth2PasswordBearer
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-# basicConfig(level=DEBUG)   # add this line
 
+# test use of authlib
+from starlette.config import Config
+from starlette.requests import Request
+from starlette.middleware.sessions import SessionMiddleware
+from starlette.responses import HTMLResponse, RedirectResponse
+from authlib.integrations.starlette_client import OAuth, OAuthError
 
-DATABASE_URL = os.environ.get('DATABASE_URL')
 app = FastAPI()
 api = FastAPI(openapi_prefix="/v0")
 app.mount("/v0", api)
 app.mount("/", StaticFiles(directory="./public", html=True), name="static")
+# authlib
+app.add_middleware(SessionMiddleware, secret_key="secret-string")
+config = Config('.env')  # read config from .env file
+oauth = OAuth(config)
 
+CONF_URL='https://accounts.google.com/.well-known/openid-configuration'
+oauth.register(
+    name='google',
+    server_metadata_url=CONF_URL,
+    client_kwargs={
+        'scope': 'openid email'
+    }
+)
+# /authlib
+
+basicConfig(level=DEBUG)   # add this line
+
+
+DATABASE_URL = os.environ.get('DATABASE_URL')
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 # basicConfig(level=DEBUG)   # add this line
 
+
 origins = [
     "*",
-    "http://localhost:8080",
+    # ここには、FrontEndのURIが書かれる。
+    "http://localhost:8080",  # required.
+    # あと、Google authとのやりとりのために、
+    "http://localhost:8088",
+    "https://accounts.google.com",
 ]
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -36,6 +64,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
 
 class Action(BaseModel):
     # token:    str     # to access API
@@ -288,6 +318,28 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 # @app.get('/')
 # def hello():
 #     return 'Hello World!'
+
+#authlib+google
+@app.get('/v0/glogin')
+async def google_login(request: Request):
+    logger = getLogger()
+    redirect_uri = request.url_for('google_auth')
+    logger.info(redirect_uri)
+    return await oauth.google.authorize_redirect(request, redirect_uri)
+
+#authlib+google
+@app.get('/v0/gauth')
+async def google_auth(request: Request):
+    logger = getLogger()
+    logger.info("AUTH")
+    logger.info(request.headers)
+    token = await oauth.google.authorize_access_token(request)
+    return token
+
+@app.get('/v0/glogout')
+async def google_logout(request: Request):
+    request.session.pop('user', None)
+    # return RedirectResponse(url='/')
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8088)) )
