@@ -110,7 +110,7 @@ export async function storeAction (endtime, duration, category, action) {
         return
     }
     if (res.status != 200) {
-        status.set("Unknown error")
+        status.set("Busy")
         return
     }
     status.set( "" )
@@ -156,7 +156,7 @@ export async function getHistory () {
         return
     }
     if (res.status != 200) {
-        status.set("Unknown error")
+        status.set("Busy")
         return
     }
     status.set( "" )

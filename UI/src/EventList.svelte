@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { history } from './stores';
     import { palettes } from './color';
-    import { daynames, shortnames } from './stat';
+    import { daynames,shortnames } from './stat';
+    import { history } from './stores';
 
     // 日付けごとに別のカラムにする。
     let days = []
@@ -77,7 +77,10 @@
         width:    200px;
     }
     .ev {
-        border: white solid 0.2px;
+        border: #0000 solid 0.2px;
         color: white;
+        margin-left: 1px;
+        margin-right: 1px;
+
     }
 </style>

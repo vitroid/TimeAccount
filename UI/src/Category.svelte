@@ -83,6 +83,8 @@
     p {
         margin: 0;
         padding: 2px;
+        margin-top: 1px;
+        margin-bottom: 1px;
     }
     button {
         margin: 0;

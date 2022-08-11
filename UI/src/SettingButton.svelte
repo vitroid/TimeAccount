@@ -1,9 +1,9 @@
 <script>
-  import { getContext } from 'svelte';
-  import SettingDialog from './SettingDialog.svelte';
-  import Gear from './gear.svelte';
-  const { open } = getContext('simple-modal');
-  const showSettingDialog = () => open(SettingDialog);
+    import { getContext } from 'svelte';
+    import Gear from './gear.svelte';
+    import SettingDialog from './SettingDialog.svelte';
+    const { open } = getContext('simple-modal');
+    const showSettingDialog = () => open(SettingDialog);
 </script>
 
 <!-- <Gear /> -->

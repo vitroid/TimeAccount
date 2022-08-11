@@ -1040,6 +1040,11 @@
     "svelte-preprocess" "^4.0.0"
     "typescript" "*"
 
+"svelte-dark-mode@^2.1.0":
+  "integrity" "sha512-/QmIqWGwzcfE82FAMuHBlKFwudW7Vcos60Ii8j/mJZ0H6kGAXwL5EGlcc8voBJMJv/i0QZmhp5b1ZX/XKg9NJQ=="
+  "resolved" "https://registry.npmjs.org/svelte-dark-mode/-/svelte-dark-mode-2.1.0.tgz"
+  "version" "2.1.0"
+
 "svelte-preprocess@^4.0.0":
   "integrity" "sha512-sNPBnqYD6FnmdBrUmBCaqS00RyCsCpj2BG58A1JBswNF7b0OKviwxqVrOL/CKyJrLSClrSeqQv5BXNg2RUbPOw=="
   "resolved" "https://registry.npmjs.org/svelte-preprocess/-/svelte-preprocess-4.10.7.tgz"
