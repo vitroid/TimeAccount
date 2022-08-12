@@ -17,9 +17,9 @@
 <style>
 	button {
 		background: var(--bg-color);
-		border: 2px solid var(--text-color);
+		border: 1px solid var(--text-color);
+        color: var(--text-color);
 		border-radius: 5px;
-		color: var(--text-color);
 		padding: 10px 15px;
 	}
 

@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { history } from './stores';
     import { palettes } from './color';
-    import { statistics, daynames, shortnames } from './stat'
+    import { daynames,shortnames,statistics } from './stat';
+    import { history } from './stores';
 
     let tiles = {}
     history.subscribe(events => {
@@ -46,6 +46,7 @@
         justify-content: flex-start;
         align-items: flex-start;
         padding: 10px;
+        /* padding-top: 50px; */
         /* overflow: auto; */
     }
     .ti {

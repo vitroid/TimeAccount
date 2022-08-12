@@ -40,6 +40,7 @@
 
 <svelte:window bind:innerWidth={width} />
 
+<div class="outerbox">
 <div class="container">
     {#each days as events, day}
     <div class="list">
@@ -60,15 +61,19 @@
     </div>
     {/each}
 </div>
+</div>
 
 <style>
+    .outerbox {
+        overflow: scroll;
+    }
     .container {
         display: flex;
         flex-flow: row nowrap;
         justify-content: flex-start;
         align-items: flex-start;
-        overflow: auto;
         padding: 10px;
+        /* padding-top: 50px; */
     }
     .list {
         display:  flex;

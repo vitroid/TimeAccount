@@ -1,16 +1,29 @@
 <script>
+	import AddCategory from "./AddCategory.svelte";
 	import Category from "./Category.svelte";
 	import LogoutComponent from './Components/LogoutComponent.svelte';
-	import { Tab,TabList,TabPanel,Tabs } from './Components/Tabs/tabs.js';
 	import DayStat from "./DayStat.svelte";
 	import EventList from "./EventList.svelte";
-	import Hour from "./Hour.svelte";
 	import HourStat from "./HourStat.svelte";
-	import Minute from "./Minute.svelte";
-	import { cats,getHistory,status } from './stores.ts';
+	import ShowStatus from "./ShowStatus.svelte";
+	import { cats,getHistory } from './stores';
+	import TimeChooser from "./TimeChooser.svelte";
 // for modal
 	import Modal from "./Components/Modal.svelte";
 	import SettingButton from './SettingButton.svelte';
+// swipe
+	// import { Swipe,SwipeItem } from "svelte-swipe";
+	import Swipe from "./Components/Swipe/Swipe.svelte";
+	import SwipeItem from "./Components/Swipe/SwipeItem.svelte";
+
+	const swipeConfig = {
+		autoplay: false,
+		delay: 2000,
+		showIndicators: true,
+		transitionDuration: 1000,
+		defaultIndex: 0,
+	};
+	// /swipe
 
 	getHistory()
 
@@ -18,23 +31,12 @@
 		getHistory()
 	}, 60*1000)  // every one minute
 
-	function addCategory() {
-		let c = 0
-		while ( c in $cats ){
-			c ++
-		}
-		$cats[c] = {}
-	}
-
-
 </script>
 
 <main>
 	<div class="statusbar">
-		<p>
-			<Hour />時<Minute />分以降、何をしていましたか?
-		</p>
-		<div class="status">{$status}</div>
+		<TimeChooser />
+		<ShowStatus />
 		<div class="tools">
 			<Modal>
 				<SettingButton />
@@ -45,26 +47,22 @@
 	{#each Object.keys($cats) as id}
 	<Category {id}/>
 	{/each}
-	<button name="name" on:click={addCategory} >+ New Category</button>
-	<Tabs>
-		<TabList>
-			<Tab>Events</Tab>
-			<Tab>Hourly stat</Tab>
-			<Tab>Daily stat</Tab>
-		</TabList>
+	<AddCategory />
+	<div class="swipe-holder">
+		<Swipe {...swipeConfig}>
+			<SwipeItem>
+				<EventList />
+			</SwipeItem>
 
-		<TabPanel>
-			<EventList />
-		</TabPanel>
+			<SwipeItem>
+				<HourStat />
+			</SwipeItem>
 
-		<TabPanel>
-			<HourStat />
-		</TabPanel>
-
-		<TabPanel>
-			<DayStat />
-		</TabPanel>
-	</Tabs>
+			<SwipeItem>
+				<DayStat />
+			</SwipeItem>
+		</Swipe>
+	</div>
 </main>
 
 <style>
@@ -72,13 +70,10 @@
 		max-width: 800px;
 		/* height: 100%; */
 		margin: auto;
-		-webkit-filter:drop-shadow(1px 3px 5px rgba(0, 0, 0, 0.2));
-		-moz-filter:drop-shadow(1px 3px 5px rgba(0, 0, 0, 0.2));
-		-ms-filter:drop-shadow(1px 3px 5px rgba(0, 0, 0, 0.2));
-		filter:drop-shadow(1px 3px 5px rgba(0, 0, 0, 0.2));
-	}
-	p {
-		margin: 0;
+		-webkit-filter:drop-shadow(1px 3px 5px var(--shadow-color));
+		-moz-filter:drop-shadow(1px 3px 5px var(--shadow-color));
+		-ms-filter:drop-shadow(1px 3px 5px var(--shadow-color));
+		filter:drop-shadow(1px 3px 5px var(--shadow-color));
 	}
 	.statusbar {
 		display: flex;
@@ -90,7 +85,8 @@
 		flex-wrap: nowrap;
 		justify-content: right;
 	}
-	.status {
-		color: #f00;
+	.swipe-holder{
+		height: 30vh;
+		width: 100%;
 	}
 </style>

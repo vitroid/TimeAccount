@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { history } from './stores';
     import { palettes } from './color';
-    import { statistics }   from './stat'
+    import { statistics } from './stat';
+    import { history } from './stores';
 
     let tiles = {}
     let hours = []
@@ -27,7 +27,7 @@
     <div class="he">{hours[i]}</div>
     {#if tiles[i]}
     {#each Object.keys(tiles[i]).sort() as cat}
-    <div class="ca" style="width:{tiles[i][cat]}%;background-color:{$palettes[cat]};">
+    <div class="ca" style="width:{tiles[i][cat]*80/60}%;background-color:{$palettes[cat]};">
         {cat}
     </div>
     {/each}
@@ -41,6 +41,7 @@
 <style>
     .container {
         padding: 10px;
+        /* padding-top: 50px; */
     }
     .ti {
         display: flex;

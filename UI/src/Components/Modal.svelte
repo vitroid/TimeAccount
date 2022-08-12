@@ -20,8 +20,8 @@
 
 <script>
   import * as svelte from 'svelte';
-  import { fade } from 'svelte/transition';
   import { createEventDispatcher } from 'svelte';
+  import { fade } from 'svelte/transition';
 
   const dispatch = createEventDispatcher();
 
@@ -482,9 +482,16 @@
     max-width: 100%;
     max-height: 100%;
     margin: 2rem auto;
-    color: black;
-    border-radius: 0.5rem;
-    background: white;
+    /* color: black; */
+    /* border-radius: 0.5rem; */
+    /* background: white; */
+
+    background: var(--bg-color);
+		border: 1px solid var(--text-color);
+    color: var(--text-color);
+		border-radius: 5px;
+		padding: 10px 15px;
+
   }
 
   .content {
@@ -569,4 +576,3 @@
     outline: none;
   }
 </style>
-

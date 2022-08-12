@@ -20,10 +20,12 @@
 	:global(body) {
 		background-color: var(--bg-color);
 		color: var(--text-color);
-		transition: background-color 0.3s
+		transition: background-color 0.3s;
+		--shadow-color: #0003;
 	}
 	:global(body.dark) {
 		--bg-color: #1d3040;
 		--text-color: #bfc2c7;
+		--shadow-color: #fff3;
 	}
 </style>

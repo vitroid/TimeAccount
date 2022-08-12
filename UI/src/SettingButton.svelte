@@ -14,6 +14,8 @@
         /* font-size: 150%; */
         height: 30px;
         padding: 0;
-        border-style: node;
+		background: none;
+		border: none;
+        color: var(--text-color);
     }
 </style>

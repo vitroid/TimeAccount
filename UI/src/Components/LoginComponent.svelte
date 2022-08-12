@@ -1,8 +1,7 @@
 <script>
 	// import { getUserDetails } from '../hooks/auth';
 	// import { store } from '../hooks/auth';
-    import { token, getToken } from '../stores';
-    import { get } from "svelte/store";
+    import { getToken } from '../stores';
 
 	let username = '';
 	let password = '';
@@ -45,6 +44,11 @@
 </form>
 
 <style>
+	.mb-3 {
+        background: var(--bg-color);
+		border: none;
+        color: var(--text-color);
+	}
     form {
         max-width: 480px;
         text-align: center;
