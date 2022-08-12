@@ -1,6 +1,6 @@
 <script>
 
-  import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+  import { createEventDispatcher,onDestroy,onMount } from 'svelte';
 
 
   export let transitionDuration = 200;
@@ -240,8 +240,12 @@
   background: rgba(0,0,0,0);
 }
 .swipe-indicator {
-  position: relative;
-  bottom: 1.5rem;
+  /* どうもユーザが上書きできるようなのだが、やりかたがわからないので、直に書く。 */
+  /* position: relative; */
+  position: absolute;
+  /* bottom: 1.5rem; */
+  top: 0px;
+  /* /mod */
   display: flex;
   justify-content: center;
   z-index: var(--sv-swipe-panel-wrapper-index, 2);
@@ -249,10 +253,13 @@
 }
 
 .dot {
-  height: 10px;
-  width: 10px;
+  /* height: 10px;
+  width: 10px; */
+  height: 12px;
+  width: 12px;
   background-color: transparent;
-  border: 1px solid grey;
+  /* border: 1px solid grey; */
+  border: 1px solid var(--text-color, grey);
   border-radius: 50%;
   display: inline-block;
   margin: 0px 2px;
@@ -260,7 +267,8 @@
   pointer-events: fill;
 }
 .swipe-indicator .is-active {
-  background-color: var(--sv-swipe-indicator-active-color, grey);
+  /* background-color: var(--sv-swipe-indicator-active-color, grey); */
+  background-color: var(--text-color, grey);
 }
 
 </style>

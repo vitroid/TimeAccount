@@ -1,5 +1,5 @@
 <script>
-    import { onMount, createEventDispatcher} from 'svelte';
+    import { createEventDispatcher,onMount } from 'svelte';
     export let active = false;
     export let classes = '';
     export let style ='';
@@ -11,30 +11,30 @@
 
 
     function firehHeightChange(){
-      if(swipeItemInner){
-        let {scrollHeight, clientHeight} = swipeItemInner;
-        fire('swipe_item_height_change', {height: Math.max(scrollHeight, clientHeight)});
-      }
+        if(swipeItemInner){
+            let {scrollHeight, clientHeight} = swipeItemInner;
+            fire('swipe_item_height_change', {height: Math.max(scrollHeight, clientHeight)});
+        }
     }
 
     $: active, (allow_dynamic_height && active && _height && requestAnimationFrame(firehHeightChange))
 
     onMount(() => {
-     setTimeout(() => {
-      allow_dynamic_height && requestAnimationFrame(firehHeightChange)
-     }, 100);
+        setTimeout(() => {
+            allow_dynamic_height && requestAnimationFrame(firehHeightChange)
+        }, 100);
     });
 </script>
 
 <style>
-  .swipeable-item {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    transition-timing-function: ease-out;
-  }
+    .swipeable-item {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        transition-timing-function: ease-out;
+    }
 </style>
 
 

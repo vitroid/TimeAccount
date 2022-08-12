@@ -1062,6 +1062,11 @@
   "resolved" "https://registry.npmjs.org/svelte-select/-/svelte-select-4.4.7.tgz"
   "version" "4.4.7"
 
+"svelte-swipe@^1.8.2":
+  "integrity" "sha512-hZDbxL23fVh0kkLZLNg0pWaITaW8SXpKplXQV/lXhO5TB7W8prBLp6OxzuQjJbgmL2LisOEX2KD1bLBejXly3A=="
+  "resolved" "https://registry.npmjs.org/svelte-swipe/-/svelte-swipe-1.8.2.tgz"
+  "version" "1.8.2"
+
 "svelte@^3.0.0", "svelte@^3.23.0", "svelte@^3.24.0", "svelte@^3.49.0", "svelte@>=3.5.0":
   "integrity" "sha512-+lmjic1pApJWDfPCpUUTc1m8azDqYCG1JN9YEngrx/hUyIcFJo6VZhj0A1Ai0wqoHcEIuQy+e9tk+4uDgdtsFA=="
   "resolved" "https://registry.npmjs.org/svelte/-/svelte-3.49.0.tgz"

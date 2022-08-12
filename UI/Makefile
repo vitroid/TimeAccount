@@ -1,12 +1,14 @@
+# public/buildディレクトリの内容を再構成する。
+# public以下のファイルだけで完全に動作する。
+build:
+	npm run build
+
+
 # 最初にgh-pagesライブラリが必要
 prepare:
 	npm install
 	npm i gh-pages
 
-# public/buildディレクトリの内容を再構成する。
-# public以下のファイルだけで完全に動作する。
-build:
-	npm run build
 
 inspect:
 	open ../API/public/index.html

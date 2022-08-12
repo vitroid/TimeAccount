@@ -1,13 +1,13 @@
 <script>
-	let darkMode = false;
+	import { darkMode } from './darkmode';
 	function toggle() {
-        darkMode = !darkMode;
+        $darkMode = !$darkMode;
         window.document.body.classList.toggle('dark');
     }
 </script>
 
 <button on:click={toggle}>
-	{#if darkMode }
+	{#if $darkMode }
 		Go light
 	{:else}
 		Go dark

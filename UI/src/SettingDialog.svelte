@@ -4,8 +4,8 @@
 	import ColorSelector from "./ColorSelector.svelte";
 	import ToggleDark from './Components/ToggleDark.svelte';
 
-	let theme
-	$: switchTheme = theme === "dark" ? "light" : "dark";
+	// let theme
+	// $: switchTheme = theme === "dark" ? "light" : "dark";
 </script>
 
 <ToggleDark />
