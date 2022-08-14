@@ -1,5 +1,15 @@
 <script>
 	import { darkMode } from './darkmode';
+
+	export function init(){
+		if ( $darkMode ){
+			window.document.body.classList.add('dark')
+		}
+		else {
+			window.document.body.classList.remove('dark')
+		}
+	}
+
 	function toggle() {
         $darkMode = !$darkMode;
         window.document.body.classList.toggle('dark');

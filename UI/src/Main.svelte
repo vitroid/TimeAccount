@@ -44,9 +44,11 @@
 			<LogoutComponent />
 		</div>
 	</div>
-	{#each Object.keys($cats) as id}
-	<Category {id}/>
-	{/each}
+	<div class="container">
+		{#each Object.keys($cats) as id}
+			<Category {id}/>
+		{/each}
+	</div>
 	<AddCategory />
 	<div class="swipe-holder">
 		<Swipe {...swipeConfig}>
@@ -86,7 +88,11 @@
 		justify-content: right;
 	}
 	.swipe-holder{
-		height: 30vh;
+		height: 500px;
 		width: 100%;
+	}
+	.container {
+		display: flex;
+		flex-direction: column;
 	}
 </style>
