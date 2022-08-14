@@ -188,27 +188,41 @@ def get_user(username: str = None, user_id: int = None):
     userが存在すれば、そのデータベースレコードの内容を返す。
     なければ何も返さない(None)
     """
+    now = time.time()
     with psycopg2.connect(DATABASE_URL) as con:
         with con.cursor() as cur:
             # logger.info(login)
             if username is not None:
                 cur.execute('SELECT * FROM auth WHERE username = %s', ( username, ))
                 for row in cur:
-                    uname, pw, uid = row
-                    return UserInDB(**{
-                        "user_id": uid,
-                        "username": uname,
-                        "hashed_password": pw,
-                    })
+                    uname, pw, uid, expires = row
+                    if expires == 0 or now < expires:
+                        return UserInDB(**{
+                            "user_id": uid,
+                            "username": uname,
+                            "hashed_password": pw,
+                        })
             if user_id is not None:
                 cur.execute('SELECT * FROM auth WHERE user_id = %s', ( user_id, ))
                 for row in cur:
-                    uname, pw, uid = row
-                    return UserInDB(**{
-                        "user_id": uid,
-                        "username": uname,
-                        "hashed_password": pw,
-                    })
+                    uname, pw, uid, expires = row
+                    if expires == 0 or now < expires:
+                        return UserInDB(**{
+                            "user_id": uid,
+                            "username": uname,
+                            "hashed_password": pw,
+                        })
+
+
+def new_user(user_id:int, username: str, password: str, expires: int = 0 ):
+    with psycopg2.connect(DATABASE_URL) as con:
+        with con.cursor() as cur:
+            cur.execute('INSERT INTO auth VALUES ( %s, %s, %s, %s )', (
+                username,
+                get_password_hash(password),
+                user_id,
+                expires)
+            )
 
 
 def authenticate_user(username: str, password: str):
@@ -272,6 +286,62 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+def authenticate_user(username: str, password: str):
+    user = get_user(username=username)
+    if not user:
+        return False
+    if not verify_password(password, user.hashed_password):
+        return False
+    return user
+
+
+NEWUSER_ACCOUNT_EXPIRE_MINUTES = 10
+
+@api.post("/signup", response_model=Token)
+async def signup(form_data: OAuth2PasswordRequestForm = Depends()):
+    """_summary_
+
+    Args:
+        form_data (OAuth2PasswordRequestForm, optional): _description_. Defaults to Depends().
+
+    Raises:
+        HTTPException: _description_
+
+    Returns:
+        _type_: _description_
+    """
+    # ユーザ名(メールアドレス)とパスワードを入力してもらう。
+    # すでに存在するユーザの場合はエラーを返す。
+    # 存在しない場合は
+    # 1. user_idをユーザ名から合成する(hash、整数で)
+    # 2. ユーザ名とパスワードとuser_idと寿命をユーザDBに追加する。
+    # 3. ユーザ名に対し、承認メールを送る。
+    # 4. (confirmation)メールへの返答を受けとり、アカウントを永続化する。
+    user = get_user(form_data.username)
+    if user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User already exists",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    user_id = hash(form_data.username)
+    while get_user(user_id=user_id):
+        user_id += 99999
+    new_user(user_id=user_id,
+        username=form_data.username,
+        password=form_data.password,
+        expires = int(time.time()) + NEWUSER_ACCOUNT_EXPIRE_MINUTES*60
+    )
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": f"{user_id}"},
+        expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
+
+
 
 
 # @app.get("/users/me/", response_model=User)
