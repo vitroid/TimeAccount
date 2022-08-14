@@ -60,6 +60,35 @@ export async function getToken (username, password) {
 }
 
 
+export async function sign_up (username, password) {
+    const obj = {
+        "username": username,
+        "password": password
+    }
+    const body_ = Object.keys(obj).map((key)=>key+"="+encodeURIComponent(obj[key])).join("&");
+
+    const res = await fetch(BASEURL+'/v0/signup', {
+        method: "POST",
+        headers: {
+            // 'Content-Type': 'application/json'
+            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+        },
+        body: body_
+    })
+
+    // もし不成功なら空文字列を返す。
+    if ( res.status != 200 ){
+        return ""
+    }
+
+    let result = await res.json()
+    if ( result != "" ){
+        token.set(result)
+        return result
+    }
+    return "";
+}
+
 
 export async function storeAction (endtime, duration, category, action) {
     /*
@@ -129,6 +158,8 @@ export async function getHistory () {
     let tok = get(token)
     if ( ! token ){
         status.set("No token")
+        history.set([])
+        cats.set({})
         return
     }
 

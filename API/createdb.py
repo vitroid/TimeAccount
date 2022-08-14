@@ -12,16 +12,16 @@ def _createdb():
             # drop table
             # cur.execute('''DROP TABLE tokens''')
             # Create table
-            # cur.execute('''CREATE TABLE records (user_id integer, endtime integer, duration integer, category integer, action text)''')
-            # cur.execute('''CREATE TABLE auth (username text, password text, user_id SERIAL PRIMARY KEY, expires integer)''')
-            # cur.execute('''CREATE TABLE tokens (user_id integer, token text PRIMARY KEY, expire float)''')
+            # cur.execute('''CREATE TABLE actions (user_id int8, endtime integer, duration integer, category integer, action text)''')
+            # cur.execute('''CREATE TABLE auth (username text, password text, user_id int8 PRIMARY KEY, expires integer)''')
             # Add a field
-            cur.execute('''alter table auth add expires integer default 0''')
-
+            # cur.execute('''alter table auth add expires integer default 0''')
+            # cur.execute('''ALTER TABLE auth ALTER COLUMN user_id TYPE int8''')
+            cur.execute('''ALTER TABLE actions ALTER COLUMN user_id TYPE int8''')
 
 if __name__ == "__main__":
     # 迂闊に使わないように、stop codeを入れておく。
-    assert False
+    # assert False
     _createdb()
     # from adduser import adduser
     # adduser(["matto", "papepo"])

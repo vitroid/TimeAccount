@@ -1,6 +1,5 @@
 <script lang="ts">
     import { palettes } from './color';
-    import InputField from './Components/InputField.svelte';
     import { cats,history,hour,minute,storeAction } from './stores';
     // Categoryとは、テキスト入力枠とボタンのセットである。
     export let id;
@@ -23,6 +22,8 @@
             }
         }
     })
+
+    let inputtext;
 
     function update(action){
         // 現在時刻
@@ -58,16 +59,21 @@
     }
 
 
+    function onKeyDown (e) {
+        if (e.key == "Enter"){
+            update(inputtext)
+        }
+        // inputtext = ""
+    }
     function onClick (e) {
         update(e.target.innerText)
     }
 
-    let inputtext;
 
 </script>
 
 <div class="container" style:background-color={$palettes[id]} >
-    <InputField {inputtext} placeholder="+ What did U do til now?" />
+    <input bind:value={inputtext} placeholder="What did you do til now?" on:keydown={onKeyDown} />
     {#each sorted as name, i}
     <button on:click={onClick} >{name}</button>
     {/each}
@@ -87,7 +93,18 @@
         background-color: #0000;
         color: white;
         border-radius: 15px;
-        height: 30px;
         width: fit-content;
+    }
+    input {
+        margin: 0;
+        background-color: #0000;
+        color: white;
+        border-radius: 15px;
+        transition: width 1s;
+        width: 30px;
+        height: 30px;
+    }
+    input:hover, input:focus{
+        width:197px;
     }
 </style>

@@ -19,7 +19,7 @@ export function hslToHex(h, s, l) {
 
 function palette(n){
     if ( n < 0 ){
-        return "#ccc"
+        return "#444"
     }
     let ra = get(huerange)
     let hue = (ra[0] + n*(ra[1]-ra[0])) % 360

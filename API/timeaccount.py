@@ -183,7 +183,7 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-def get_user(username: str = None, user_id: int = None):
+def get_user(username: str = None, user_id: int = None, including_expired = False):
     """
     userが存在すれば、そのデータベースレコードの内容を返す。
     なければ何も返さない(None)
@@ -196,7 +196,7 @@ def get_user(username: str = None, user_id: int = None):
                 cur.execute('SELECT * FROM auth WHERE username = %s', ( username, ))
                 for row in cur:
                     uname, pw, uid, expires = row
-                    if expires == 0 or now < expires:
+                    if expires == 0 or now < expires or including_expired:
                         return UserInDB(**{
                             "user_id": uid,
                             "username": uname,
@@ -206,7 +206,7 @@ def get_user(username: str = None, user_id: int = None):
                 cur.execute('SELECT * FROM auth WHERE user_id = %s', ( user_id, ))
                 for row in cur:
                     uname, pw, uid, expires = row
-                    if expires == 0 or now < expires:
+                    if expires == 0 or now < expires or including_expired:
                         return UserInDB(**{
                             "user_id": uid,
                             "username": uname,
@@ -319,6 +319,7 @@ async def signup(form_data: OAuth2PasswordRequestForm = Depends()):
     # 2. ユーザ名とパスワードとuser_idと寿命をユーザDBに追加する。
     # 3. ユーザ名に対し、承認メールを送る。
     # 4. (confirmation)メールへの返答を受けとり、アカウントを永続化する。
+    now = int(time.time())
     user = get_user(form_data.username)
     if user:
         raise HTTPException(
@@ -327,12 +328,12 @@ async def signup(form_data: OAuth2PasswordRequestForm = Depends()):
             headers={"WWW-Authenticate": "Bearer"},
         )
     user_id = hash(form_data.username)
-    while get_user(user_id=user_id):
-        user_id += 99999
+    while get_user(user_id=user_id, including_expired=True):
+        user_id += 2
     new_user(user_id=user_id,
         username=form_data.username,
         password=form_data.password,
-        expires = int(time.time()) + NEWUSER_ACCOUNT_EXPIRE_MINUTES*60
+        expires = now + NEWUSER_ACCOUNT_EXPIRE_MINUTES*60
     )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(

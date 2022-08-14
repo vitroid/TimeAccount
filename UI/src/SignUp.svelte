@@ -1,29 +1,28 @@
 <script>
 	// import { getUserDetails } from '../hooks/auth';
 	// import { store } from '../hooks/auth';
-    import { getToken } from '../stores';
+    import { sign_up } from './stores';
 
 	let username = '';
 	let password = '';
 	let error = ''
 
-	async function login() {
-		// const user = await getUserDetails( username, password )
+	async function signup() {
 		let tok;
-        getToken( username, password ).then((tok)=>{
+        sign_up( username, password ).then((tok)=>{
 			if ( tok ) {
 				if ( error ) error = ''
 			}
 			else {
-				error = 'Incorrect username and password.'
-				console.log("Incorrect username and password.")
+				error = 'Username exists.'
+				console.log("Username exists.")
 			}
 		})
 	}
 
 </script>
 
-<form on:submit|preventDefault={login} class="flex mx-auto col-6">
+<form on:submit|preventDefault={signup} class="flex mx-auto col-6">
 
 	<div class="mb-3">
 		<label for="username" class="form-label">Username</label>
@@ -36,7 +35,7 @@
 		<input type="password" class="form-control" id="password" bind:value={password} />
 	</div>
 
-	<button type="submit" class="btn btn-primary">Log in</button>
+	<button type="submit" class="btn btn-primary">Sign up</button>
 	<div id="error_message" class="text-danger">
 		<small>{error}</small>
 	</div>

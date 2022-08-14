@@ -3,10 +3,10 @@
 	// import { store } from './hooks/auth';
 	// import { theme } from './color';
 	import { onMount } from 'svelte';
-	import LoginComponent from './Components/LoginComponent.svelte';
-	import { token } from './stores.ts';
-
 	import { darkMode } from './Components/darkmode';
+	import LoginComponent from './Components/LoginComponent.svelte';
+	import SignUp from './SignUp.svelte';
+	import { token } from './stores.ts';
 
 	onMount( () => {
 		if ( $darkMode ){
@@ -30,4 +30,5 @@
 	<AfterLogin />
 {:else }
 	<LoginComponent />
+	<SignUp />
 {/if}
