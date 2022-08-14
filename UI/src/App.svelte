@@ -29,6 +29,30 @@
 {#if $token != "" }
 	<AfterLogin />
 {:else }
-	<LoginComponent />
-	<SignUp />
+	<div class="container">
+		<div class="panel">
+			<h1>User sign in</h1>
+			<LoginComponent />
+		</div>
+		<div class="panel">
+			<h1>Sign Up</h1>
+			<SignUp />
+		</div>
+	</div>
 {/if}
+
+<style>
+	.container {
+		display: flex;
+		flex-flow: row;
+		justify-content: center;
+	}
+	.panel {
+		margin: 5px;
+		border: 1px solid #888;
+		border-radius: 15px;
+	}
+	h1 {
+		text-align: center;
+	}
+</style>

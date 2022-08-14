@@ -25,7 +25,7 @@
 <form on:submit|preventDefault={signup} class="flex mx-auto col-6">
 
 	<div class="mb-3">
-		<label for="username" class="form-label">Username</label>
+		<label for="username" class="form-label">mail address (Username)</label>
 		<!-- <input type="email" class="form-control" id="username" bind:value={username} /> -->
 		<input type="text" class="form-control" id="username" bind:value={username} autocomplete="username"/>
 	</div>
