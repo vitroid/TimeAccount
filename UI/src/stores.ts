@@ -162,7 +162,7 @@ export async function getHistory () {
      */
 
     let tok = get(token)
-    if ( ! token ){
+    if ( ! tok ){
         status.set("No token")
         history.set([])
         cats.set({})
