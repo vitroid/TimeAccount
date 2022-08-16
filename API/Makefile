@@ -1,6 +1,6 @@
 routine:
 	cd ../UI && make build
-	git add timeaccount.py public
+	git add timeaccount.py public requirements.txt config.yaml sendmail.py
 
 
 test-auth:

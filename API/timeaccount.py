@@ -5,15 +5,19 @@ from logging import DEBUG, basicConfig, getLogger
 
 import psycopg2
 import uvicorn
+import yaml
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 # basicConfig(level=DEBUG)   # add this line
 
-
+UI_URL = "http://timeaccount.herokuapp.com"
+API_URL = "http://timeaccount.herokuapp.com/v0"
+config = yaml.safe_load(open("config.yaml"))
 DATABASE_URL = os.environ.get('DATABASE_URL')
 app = FastAPI()
 api = FastAPI(openapi_prefix="/v0")
@@ -297,7 +301,16 @@ def authenticate_user(username: str, password: str):
     return user
 
 
+
+def mail(to, subject, body):
+    pass
+
+from validate_email import validate_email
+
+from sendmail import mail
+
 NEWUSER_ACCOUNT_EXPIRE_MINUTES = 10
+
 
 @api.post("/signup", response_model=Token)
 async def signup(form_data: OAuth2PasswordRequestForm = Depends()):
@@ -320,6 +333,14 @@ async def signup(form_data: OAuth2PasswordRequestForm = Depends()):
     # 3. ユーザ名に対し、承認メールを送る。
     # 4. (confirmation)メールへの返答を受けとり、アカウントを永続化する。
     now = int(time.time())
+
+    valid_email = validate_email(email_address=form_data.username)
+    if not valid_email:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Only a valid email address is accepted.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     user = get_user(form_data.username)
     if user:
         raise HTTPException(
@@ -335,6 +356,19 @@ async def signup(form_data: OAuth2PasswordRequestForm = Depends()):
         password=form_data.password,
         expires = now + NEWUSER_ACCOUNT_EXPIRE_MINUTES*60
     )
+    # tokenの中に、uidと、expiresを入れてencodeしておく。
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": f"{user_id}"},
+        expires_delta=access_token_expires
+    )
+    link = f"{API_URL}/verify?token={access_token}"
+    body = f"Click the following URL to verify your siginig up to the TimeAccount.\n{link}"
+    mail(to=form_data.
+        username,
+        subject="TimeAccount user verification",
+        body=body,
+        api_key=config["sendgrid_api_key"])
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": f"{user_id}"},
@@ -342,6 +376,26 @@ async def signup(form_data: OAuth2PasswordRequestForm = Depends()):
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
+
+@api.get("/verify")
+async def verify(token: str):
+    logger = getLogger('uvicorn')
+    user = await get_current_user(token)
+    logger.info(user)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    logger.info("Access granted.")
+
+    # make the account persistent
+    with psycopg2.connect(DATABASE_URL) as con:
+        with con.cursor() as cur:
+            cur.execute('UPDATE auth SET expires = %s WHERE user_id = %s ', ( 0, user.user_id ))
+
+    return RedirectResponse(f"{UI_URL}")
 
 
 
