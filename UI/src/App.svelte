@@ -46,6 +46,7 @@
 		display: flex;
 		flex-flow: row;
 		justify-content: center;
+		flex-wrap: wrap;
 	}
 	.panel {
 		margin: 5px;

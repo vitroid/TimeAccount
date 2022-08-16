@@ -18,25 +18,28 @@
 
 <svelte:window bind:innerWidth={width} />
 
-<div class="container">
-{#if Object.keys(tiles).length}
-{#each Object.keys(tiles).sort() as day, i}
-<div class="ti">
-    <div class="he">
-        {#if width > 500}
-            {daynames[day]}
-        {:else}
-            {shortnames[day]}
+<div class="outerbox">
+    <h1>Daily statistics</h1>
+    <div class="container">
+        {#if Object.keys(tiles).length}
+        {#each Object.keys(tiles).sort() as day, i}
+        <div class="ti">
+            <div class="he">
+                {#if width > 500}
+                    {daynames[day]}
+                {:else}
+                    {shortnames[day]}
+                {/if}
+            </div>
+            {#each Object.keys(tiles[day]).sort() as cat}
+            <div class="ca" style="width:{tiles[day][cat]*80/1440}%;background-color:{$palettes[cat]};">
+                {cat}
+            </div>
+            {/each}
+        </div>
+        {/each}
         {/if}
     </div>
-    {#each Object.keys(tiles[day]).sort() as cat}
-    <div class="ca" style="width:{tiles[day][cat]*80/1440}%;background-color:{$palettes[cat]};">
-        {cat}
-    </div>
-    {/each}
-</div>
-{/each}
-{/if}
 </div>
 
 <style>

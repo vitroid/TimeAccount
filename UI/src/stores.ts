@@ -54,6 +54,8 @@ export async function getToken (username, password) {
     let result = await res.json()
     if ( result != "" ){
         token.set(result)
+        history.set([])
+        cats.set({})
         return result
     }
     return "";
@@ -84,6 +86,8 @@ export async function sign_up (username, password) {
     let result = await res.json()
     if ( result != "" ){
         token.set(result)
+        history.set([])
+        cats.set({})
         return result
     }
     return "";
@@ -136,6 +140,8 @@ export async function storeAction (endtime, duration, category, action) {
     if ( res.status == 401 ){
         status.set("Unauthorized")
         token.set("")
+        history.set([])
+        cats.set({})
         return
     }
     if (res.status != 200) {
@@ -184,6 +190,8 @@ export async function getHistory () {
     if ( res.status == 401 ){
         status.set("Unauthorized")
         token.set("")
+        history.set([])
+        cats.set({})
         return
     }
     if (res.status != 200) {

@@ -20,23 +20,25 @@
 
 </script>
 
-<div class="container">
-{#if Object.keys(tiles).length}
-{#each Array(24) as delta, i}
-<div class="ti">
-    <div class="he">{hours[i]}</div>
-    {#if tiles[i]}
-    {#each Object.keys(tiles[i]).sort() as cat}
-    <div class="ca" style="width:{tiles[i][cat]*80/60}%;background-color:{$palettes[cat]};">
-        {cat}
+<div class="outerbox">
+    <h1>Hourly statistics</h1>
+    <div class="container">
+        {#if Object.keys(tiles).length}
+        {#each Array(24) as delta, i}
+        <div class="ti">
+            <div class="he">{hours[i]}</div>
+            {#if tiles[i]}
+            {#each Object.keys(tiles[i]).sort() as cat}
+            <div class="ca" style="width:{tiles[i][cat]*80/60}%;background-color:{$palettes[cat]};">
+                {cat}
+            </div>
+            {/each}
+            {/if}
+        </div>
+        {/each}
+        {/if}
     </div>
-    {/each}
-    {/if}
 </div>
-{/each}
-{/if}
-</div>
-
 
 <style>
     .container {

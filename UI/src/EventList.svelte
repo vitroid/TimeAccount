@@ -41,26 +41,27 @@
 <svelte:window bind:innerWidth={width} />
 
 <div class="outerbox">
-<div class="container">
-    {#each days as events, day}
-    <div class="list">
-        <div>
-            {#if width > 500}
-                {daynames[day]}
-            {:else}
-                {shortnames[day]}
-            {/if}
-        </div>
-        {#each events as event, i}
-        <!-- 0 user_id, 1 endtime, 2 duration, 3 category, 4 action, 5 hours, 6 minutes-->
-        <div class="ev" style="background-color:{$palettes[event[3]]};" >
-            <!-- height:{event[2]}px; -->
-            {event[5]}:{event[6]} {event[4]}
+    <h1>History</h1>
+    <div class="container">
+        {#each days as events, day}
+        <div class="list">
+            <div>
+                {#if width > 500}
+                    {daynames[day]}
+                {:else}
+                    {shortnames[day]}
+                {/if}
+            </div>
+            {#each events as event, i}
+            <!-- 0 user_id, 1 endtime, 2 duration, 3 category, 4 action, 5 hours, 6 minutes-->
+            <div class="ev" style="background-color:{$palettes[event[3]]};" >
+                <!-- height:{event[2]}px; -->
+                {event[5]}:{event[6]} {event[4]}
+            </div>
+            {/each}
         </div>
         {/each}
     </div>
-    {/each}
-</div>
 </div>
 
 <style>
