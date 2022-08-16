@@ -33,7 +33,6 @@
         }
     })
 
-
     let width;
 
 </script>
@@ -87,6 +86,5 @@
         color: white;
         margin-left: 1px;
         margin-right: 1px;
-
     }
 </style>

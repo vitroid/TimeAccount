@@ -1,5 +1,5 @@
 <script>
-	import AddCategory from "./AddCategory.svelte";
+	// import AddCategory from "./AddCategory.svelte";
 	import Category from "./Category.svelte";
 	import LogoutComponent from './Components/LogoutComponent.svelte';
 	import DayStat from "./DayStat.svelte";
@@ -8,6 +8,7 @@
 	import ShowStatus from "./ShowStatus.svelte";
 	import { cats,getHistory } from './stores';
 	import TimeChooser from "./TimeChooser.svelte";
+	import WeekStat from "./WeekStat.svelte";
 // for modal
 	import Modal from "./Components/Modal.svelte";
 	import SettingButton from './SettingButton.svelte';
@@ -31,6 +32,17 @@
 		getHistory()
 	}, 60*1000)  // every one minute
 
+	let next_category = 0
+
+	cats.subscribe(categories=>{
+		console.log(categories,"x")
+		next_category = Math.max(...Object.keys(categories)) + 1
+		if ( next_category < 0 ){
+			next_category = 0
+		}
+		console.log(categories, next_category, "y")
+	})
+
 </script>
 
 <main>
@@ -45,13 +57,17 @@
 		</div>
 	</div>
 	<div class="container">
-		{#each Object.keys($cats) as id}
+		{#each Array(next_category+1) as i, id}
 			<Category {id}/>
 		{/each}
 	</div>
-	<AddCategory />
+	<!-- <AddCategory /> -->
 	<div class="swipe-holder">
 		<Swipe {...swipeConfig}>
+			<SwipeItem>
+				<WeekStat />
+			</SwipeItem>
+
 			<SwipeItem>
 				<EventList />
 			</SwipeItem>

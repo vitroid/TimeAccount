@@ -4,8 +4,7 @@
     // Categoryとは、テキスト入力枠とボタンのセットである。
     export let id;
 
-    // export let whatUdid;
-    let buttons
+    let buttons = {}
     let sorted = []
 
     // test if obj is a hash or not
@@ -43,6 +42,9 @@
         }
         // 最新版では、サーバと矛盾がない限りreloadしないので、ボタンを強制的に追加する。
         // ボタンを作成または更新
+        if ( ! buttons ){
+            buttons = {}
+        }
         buttons[action] = now
         // sort and pick 6 newest items
         sorted = Object.keys(buttons).sort((a,b)=>buttons[b] - buttons[a]) //.slice(0,6)
