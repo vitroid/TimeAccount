@@ -48,3 +48,7 @@ UI/src/Components/svelte-swipe-master.zip
 UI/src/Components/Swipe.original/index.js
 UI/src/Components/Swipe.original/Swipe.svelte
 UI/src/Components/Swipe.original/SwipeItem.svelte
+API/__pycache__/sendmail.cpython-39.pyc
+API/@@
+.gitignore
+API/@
