@@ -22,7 +22,7 @@
         }
     })
 
-    let inputtext;
+    let input_text;
 
     function update(action){
         // 現在時刻
@@ -60,12 +60,13 @@
         minute.set(m)
     }
 
+    let input_field
 
     function onKeyDown (e) {
         if (e.key == "Enter"){
-            update(inputtext)
+            update(input_text)
+            input_field.value = ""
         }
-        // inputtext = ""
     }
     function onClick (e) {
         update(e.target.innerText)
@@ -75,7 +76,7 @@
 </script>
 
 <div class="container" style:background-color={$palettes[id]} >
-    <input bind:value={inputtext} placeholder="What did you do til now?" on:keydown={onKeyDown} />
+    <input bind:this={input_field} bind:value={input_text} placeholder="What did you do til now?" on:keydown={onKeyDown} />
     {#each sorted as name, i}
     <button on:click={onClick} >{name}</button>
     {/each}

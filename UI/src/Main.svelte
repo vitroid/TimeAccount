@@ -1,9 +1,10 @@
 <script>
 	// import AddCategory from "./AddCategory.svelte";
+	import Actions from "./Actions.svelte";
 	import Category from "./Category.svelte";
 	import LogoutComponent from './Components/LogoutComponent.svelte';
 	import DayStat from "./DayStat.svelte";
-	import EventList from "./EventList.svelte";
+// import EventList from "./EventList.svelte";
 	import HourStat from "./HourStat.svelte";
 	import ShowStatus from "./ShowStatus.svelte";
 	import { cats,getHistory } from './stores';
@@ -35,12 +36,10 @@
 	let next_category = 0
 
 	cats.subscribe(categories=>{
-		console.log(categories,"x")
 		next_category = Math.max(...Object.keys(categories)) + 1
 		if ( next_category < 0 ){
 			next_category = 0
 		}
-		console.log(categories, next_category, "y")
 	})
 
 </script>
@@ -64,12 +63,17 @@
 	<!-- <AddCategory /> -->
 	<div class="swipe-holder">
 		<Swipe {...swipeConfig}>
+			<!-- <SwipeItem>
+				<Actions />
+			</SwipeItem> -->
+
 			<SwipeItem>
 				<WeekStat />
 			</SwipeItem>
 
 			<SwipeItem>
-				<EventList />
+				<Actions />
+				<!-- <EventList /> -->
 			</SwipeItem>
 
 			<SwipeItem>

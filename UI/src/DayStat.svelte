@@ -2,6 +2,7 @@
     import { palettes } from './color';
     import { daynames,shortnames,statistics } from './stat';
     import { history } from './stores';
+    import TagTitle from './TagTitle.svelte';
 
     let tiles = {}
     history.subscribe(events => {
@@ -19,7 +20,7 @@
 <svelte:window bind:innerWidth={width} />
 
 <div class="outerbox">
-    <h1>Daily statistics</h1>
+    <TagTitle title="Daily statistics" />
     <div class="container">
         {#if Object.keys(tiles).length}
         {#each Object.keys(tiles).sort() as day, i}

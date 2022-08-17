@@ -2,6 +2,7 @@
     import { palettes } from './color';
     import { statistics } from './stat';
     import { history } from './stores';
+    import TagTitle from './TagTitle.svelte';
 
     let tiles = {}
     let hours = []
@@ -21,7 +22,7 @@
 </script>
 
 <div class="outerbox">
-    <h1>Hourly statistics</h1>
+    <TagTitle title="Hourly statistics" />
     <div class="container">
         {#if Object.keys(tiles).length}
         {#each Array(24) as delta, i}

@@ -2,6 +2,8 @@
     import { accum } from './accum';
     import { palettes } from './color';
     import { history } from './stores';
+    import TagTitle from './TagTitle.svelte';
+
     let categories
     let catsum;
 
@@ -31,7 +33,7 @@
             })
         })
         Object.keys(catsum).forEach(category=>{
-            catsum[category] *= 40 / grandsum
+            catsum[category] *= 45 / grandsum
             // catsum[category] += 1
         })
     })
@@ -41,7 +43,7 @@
 
 
 <div class="outerbox">
-    <h1>TimeAccount of a week</h1>
+    <TagTitle title="TimeAccount of a week" />
     {#each Object.keys(categories) as category, i}
     <div class="container" style='height:{catsum[category]}vh; background-color:{$palettes[i]}' >
         {#each Object.keys(categories[category]).sort((a,b)=>{return categories[category][b] - categories[category][a]}) as action, j}

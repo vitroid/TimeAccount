@@ -2,6 +2,7 @@
     import { palettes } from './color';
     import { daynames,shortnames } from './stat';
     import { history } from './stores';
+    import TagTitle from './TagTitle.svelte';
 
     // 日付けごとに別のカラムにする。
     let days = []
@@ -40,7 +41,7 @@
 <svelte:window bind:innerWidth={width} />
 
 <div class="outerbox">
-    <h1>History</h1>
+    <TagTitle title="History" />
     <div class="container">
         {#each days as events, day}
         <div class="list">
