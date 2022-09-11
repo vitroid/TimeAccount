@@ -11,7 +11,7 @@
         const oldest = now - 24*60
 
         let i=0
-        while ( (h.length < i) && (h[i][1] > oldest) ){
+        while ( (h.length < i) && (h[i].endtime > oldest) ){
             i++
         }
         actions = h.slice(0, i-1)
@@ -23,11 +23,11 @@
 <div class="outerbox">
     <TagTitle title="Recent actions" />
     <div class="list">
-        {#each actions as action, i}
+        {#each actions as action}
         <!-- 0 user_id, 1 endtime, 2 duration, 3 category, 4 action, 5 hours, 6 minutes-->
-        <div class="ev" style="background-color:{$palettes[action[3]]};" >
+        <div class="ev" style="background-color:{$palettes[action.category]};" >
             <!-- height:{action[2]}px; -->
-            {action[5]}:{action[6]} {action[4]}
+            {action.hours}:{action.minutes} {action.action}
         </div>
         {/each}
     </div>

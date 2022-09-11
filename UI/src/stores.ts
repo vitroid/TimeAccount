@@ -12,8 +12,8 @@ export const token = localStorageStore("token", "");
 
 export const status = writable("Offline")
 
-const BASEURL = "https://timeaccount.herokuapp.com"
-// const BASEURL = "http://localhost:8088"
+// const BASEURL = "https://timeaccount.herokuapp.com"
+const BASEURL = "http://localhost:8088"
 
 export async function getToken (username, password) {
     /* parameters:
@@ -99,7 +99,7 @@ export async function storeAction (endtime, duration, category, action) {
         parameters:
         endtime: unixtime?
         duration: in minutes
-        category: integer
+        category: string
         action: string
 
         store an action record to the server
@@ -203,7 +203,7 @@ export async function getHistory () {
     res.json().then(result=>{
         let remote_history = JSON.parse(result)
         if ( remote_history.length > 0 ){
-            const remotelast = remote_history[0][1]
+            const remotelast = remote_history[0].endtime
             minute.set(Math.floor(remotelast % 60))
             hour.set(Math.floor(remotelast / 60 + 9) % 24)
         }
@@ -215,9 +215,9 @@ export async function getHistory () {
         const l = get(history)
         if ( l.length > 0 ){
             // 手許の最終actionの時刻
-            const locallast = Math.floor(l[0][1])
+            const locallast = Math.floor(l[0].endtime)
             // サーバ上の最終actionの時刻
-            const remotelast = remote_history[0][1]
+            const remotelast = remote_history[0].endtime
             // もし履歴の最新と、こちらの履歴の最新の時刻が一致するなら
             if ( locallast == remotelast ){
                 return
@@ -230,15 +230,15 @@ export async function getHistory () {
             // 0 user_id, 1 endtime, 2 duration, 3 category, 4 action, 5 hours, 6 minutes
 
             // svelteでの表示が楽になるように、時と分を準備する。
-            const minutes = Math.floor(row[1] % 60)
-            const hours   = Math.floor(row[1] / 60 + 9) % 24
-            row.push(hours)
-            row.push(minutes)
+            const minutes = Math.floor(row.endtime % 60)
+            const hours   = Math.floor(row.endtime / 60 + 9) % 24
+            row.hours = hours
+            row.minutes = minutes
 
             // categoryを再構成
-            const cat = row[3]
-            const endtime = row[1]
-            const action = row[4]
+            const cat = row.category
+            const endtime = row.endtime
+            const action = row.action
 
             if ( ! (cat in categories) ){
                 categories[cat] = {}
@@ -250,6 +250,7 @@ export async function getHistory () {
         }
         // writableを更新する。
         history.set(remote_history)
+        console.log(remote_history)
         cats.set(categories)
     })
     return

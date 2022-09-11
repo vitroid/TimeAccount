@@ -3,9 +3,10 @@ import os
 import time
 from logging import DEBUG, basicConfig, getLogger
 
-import psycopg2
+# import psycopg2
 import uvicorn
 import yaml
+from deta import Deta
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
@@ -13,12 +14,16 @@ from fastapi.security import OAuth2PasswordBearer
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
+config = yaml.safe_load(open("config.yaml"))
+deta = Deta(config["deta_project_key"])
+
 # basicConfig(level=DEBUG)   # add this line
 
-UI_URL = "http://timeaccount.herokuapp.com"
-API_URL = "http://timeaccount.herokuapp.com/v0"
-config = yaml.safe_load(open("config.yaml"))
-DATABASE_URL = os.environ.get('DATABASE_URL')
+# UI_URL = "http://timeaccount.herokuapp.com"
+# API_URL = "http://timeaccount.herokuapp.com/v0"
+API_URL = "http://localhost:8088/v0"
+UI_URL = "http://localhost:8088"
+# DATABASE_URL = os.environ.get('DATABASE_URL')
 app = FastAPI()
 api = FastAPI(openapi_prefix="/v0")
 app.mount("/v0", api)
@@ -30,7 +35,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 origins = [
     "*",
-    "http://localhost:8080",
+    # "http://localhost:8080",
 ]
 
 app.add_middleware(
@@ -45,8 +50,8 @@ class Action(BaseModel):
     # token:    str     # to access API
     endtime:  int     # unixtime in minutes
     duration: int     # minutes
-    category: int     # freely assignable
-    action:     str     # label for the button
+    category: str     # freely assignable
+    action:   str     # label for the button
 
 class Login(BaseModel):
     username: str
@@ -79,37 +84,53 @@ async def history(minutes: int, token: str = Depends(oauth2_scheme)) -> str:
 
     logger = getLogger('uvicorn')
 
-    # DB
+    # with psycopg2.connect(DATABASE_URL) as con:
+        # with con.cursor() as cur:
+    user = await get_current_user(token)
 
-    with psycopg2.connect(DATABASE_URL) as con:
-        with con.cursor() as cur:
-            user = await get_current_user(token)
-            # logger.error(user)
+    if user is None:
+        return json.dumps([])
 
-            if user is None:
-                return json.dumps([])
+    # old enough time to be ignored
+    if minutes == 0:
+        ancient = 0
+    else:
+        ancient = time.time() / 60 - minutes
 
-            # old enough time to be ignored
-            if minutes == 0:
-                ancient = 0
-            else:
-                ancient = time.time() / 60 - minutes
+    actions = deta.Base("actions")
+    fetch_res = actions.fetch({"user_id": user.user_id})
 
-            rows = []
-            cur.execute('SELECT * FROM actions WHERE user_id = %s AND endtime > %s ORDER BY endtime DESC',
-                                    ( user.user_id, ancient ))
-            for row in cur:
-                # 連続したレコードのactionが同じで、時区間が重なっていれば、マージする。
-                if len(rows) > 0:
-                    category, action = row[3:5]
-                    if rows[-1][4] == action and rows[-1][3] == category:
-                        newrange = merge(rows[-1][1:3], row[1:3])
-                        if newrange is not None:
-                            rows[-1][1], rows[-1][2] = newrange
-                            continue
-                rows.append(list(row))
+    return json.dumps([item for item in sorted(fetch_res.items, key=lambda x: -x["endtime"])])
 
-            return json.dumps(rows)
+    # with psycopg2.connect(DATABASE_URL) as con:
+    #     with con.cursor() as cur:
+    #         user = await get_current_user(token)
+    #         # logger.error(user)
+
+    #         if user is None:
+    #             return json.dumps([])
+
+    #         # old enough time to be ignored
+    #         if minutes == 0:
+    #             ancient = 0
+    #         else:
+    #             ancient = time.time() / 60 - minutes
+
+    #         rows = []
+    #         cur.execute('SELECT * FROM actions WHERE user_id = %s AND endtime > %s ORDER BY endtime DESC',
+    #                                 ( user.user_id, ancient ))
+    #         for row in cur:
+    #             # 連続したレコードのactionが同じで、時区間が重なっていれば、マージする。
+    #             if len(rows) > 0:
+    #                 category, action = row[3:5]
+    #                 if rows[-1][4] == action and rows[-1][3] == category:
+    #                     newrange = merge(rows[-1][1:3], row[1:3])
+    #                     if newrange is not None:
+    #                         rows[-1][1], rows[-1][2] = newrange
+    #                         continue
+    #             rows.append(list(row))
+
+    #         return json.dumps(rows)
 
 
 @api.put("/")
@@ -119,21 +140,37 @@ async def store_action(action: Action, token: str = Depends(oauth2_scheme)):
     """
     # logger = getLogger('uvicorn')
 
-    with psycopg2.connect(DATABASE_URL) as con:
-        with con.cursor() as cur:
-            user = await get_current_user(token)
+    actions = deta.Base("actions")
+    user = await get_current_user(token)
 
-            if user is None:
-                return "Missing token."
+    if user is None:
+        return "Missing token."
 
-            cur.execute('INSERT INTO actions VALUES ( %s, %s, %s, %s, %s ) ', (
-                        user.user_id,
-                        action.endtime,
-                        action.duration,
-                        action.category,
-                        action.action,
-            ))
-            return "OK"
+    actions.insert({
+        "user_id":  user.user_id,
+        "endtime":  action.endtime,
+        "duration": action.duration,
+        "category": action.category,
+        "action":   action.action
+    })
+
+    return "OK"
+
+    # with psycopg2.connect(DATABASE_URL) as con:
+    #     with con.cursor() as cur:
+    #         user = await get_current_user(token)
+
+    #         if user is None:
+    #             return "Missing token."
+
+    #         cur.execute('INSERT INTO actions VALUES ( %s, %s, %s, %s, %s ) ', (
+    #                     user.user_id,
+    #                     action.endtime,
+    #                     action.duration,
+    #                     action.category,
+    #                     action.action,
+    #         ))
+    #         return "OK"
 
 
 # taken and modified from https://fastapi.tiangolo.com/ja/tutorial/security/first-steps/
@@ -192,41 +229,73 @@ def get_user(username: str = None, user_id: int = None, including_expired = Fals
     userが存在すれば、そのデータベースレコードの内容を返す。
     なければ何も返さない(None)
     """
+    logger = getLogger('uvicorn')
     now = time.time()
-    with psycopg2.connect(DATABASE_URL) as con:
-        with con.cursor() as cur:
-            # logger.info(login)
-            if username is not None:
-                cur.execute('SELECT * FROM auth WHERE username = %s', ( username, ))
-                for row in cur:
-                    uname, pw, uid, expires = row
-                    if expires == 0 or now < expires or including_expired:
-                        return UserInDB(**{
-                            "user_id": uid,
-                            "username": uname,
-                            "hashed_password": pw,
-                        })
-            if user_id is not None:
-                cur.execute('SELECT * FROM auth WHERE user_id = %s', ( user_id, ))
-                for row in cur:
-                    uname, pw, uid, expires = row
-                    if expires == 0 or now < expires or including_expired:
-                        return UserInDB(**{
-                            "user_id": uid,
-                            "username": uname,
-                            "hashed_password": pw,
-                        })
+    auth = deta.Base("auth")
+    if username is not None:
+        fetch_res = auth.fetch({"username": username})
+        for item in fetch_res.items:
+            expires = item["expires"]
+            if expires == 0 or now < expires or including_expired:
+                logger.info(item)
+                return UserInDB(**{
+                    "user_id": item["user_id"],
+                    "username": item["username"],
+                    "hashed_password": item["hashed_password"]
+                })
+    if user_id is not None:
+        fetch_res = auth.fetch({"user_id": user_id})
+        for item in fetch_res.items:
+            expires = item["expires"]
+            if expires == 0 or now < expires or including_expired:
+                logger.info(item)
+                return UserInDB(**{
+                    "user_id": item["user_id"],
+                    "username": item["username"],
+                    "hashed_password": item["hashed_password"]
+                })
+
+    # with psycopg2.connect(DATABASE_URL) as con:
+    #     with con.cursor() as cur:
+    #         # logger.info(login)
+    #         if username is not None:
+    #             cur.execute('SELECT * FROM auth WHERE username = %s', ( username, ))
+    #             for row in cur:
+    #                 uname, pw, uid, expires = row
+    #                 if expires == 0 or now < expires or including_expired:
+    #                     return UserInDB(**{
+    #                         "user_id": uid,
+    #                         "username": uname,
+    #                         "hashed_password": pw,
+    #                     })
+    #         if user_id is not None:
+    #             cur.execute('SELECT * FROM auth WHERE user_id = %s', ( user_id, ))
+    #             for row in cur:
+    #                 uname, pw, uid, expires = row
+    #                 if expires == 0 or now < expires or including_expired:
+    #                     return UserInDB(**{
+    #                         "user_id": uid,
+    #                         "username": uname,
+    #                         "hashed_password": pw,
+    #                     })
 
 
 def new_user(user_id:int, username: str, password: str, expires: int = 0 ):
-    with psycopg2.connect(DATABASE_URL) as con:
-        with con.cursor() as cur:
-            cur.execute('INSERT INTO auth VALUES ( %s, %s, %s, %s )', (
-                username,
-                get_password_hash(password),
-                user_id,
-                expires)
-            )
+    auth = deta.Base("auth")
+    auth.insert({
+        "username": username,
+        "user_id":  user_id,
+        "expires":  expires,
+        "hashed_password": get_password_hash(password)
+    })
+    # with psycopg2.connect(DATABASE_URL) as con:
+    #     with con.cursor() as cur:
+    #         cur.execute('INSERT INTO auth VALUES ( %s, %s, %s, %s )', (
+    #             username,
+    #             get_password_hash(password),
+    #             user_id,
+    #             expires)
+    #         )
 
 
 def authenticate_user(username: str, password: str):
@@ -332,9 +401,13 @@ async def signup(form_data: OAuth2PasswordRequestForm = Depends()):
     # 2. ユーザ名とパスワードとuser_idと寿命をユーザDBに追加する。
     # 3. ユーザ名に対し、承認メールを送る。
     # 4. (confirmation)メールへの返答を受けとり、アカウントを永続化する。
+    logger = getLogger('uvicorn')
+
     now = int(time.time())
 
-    valid_email = validate_email(email_address=form_data.username)
+    logger.info("Validating the email address")
+    valid_email = validate_email(email_address=form_data.username, check_blacklist=False, check_dns=False, check_smtp=False)
+    logger.info(f"{form_data.username}: {valid_email}")
     if not valid_email:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -388,12 +461,14 @@ async def verify(token: str):
             detail="Invalid token",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    logger.info("Access granted.")
+    logger.info(f"Access granted to {user.username}.")
 
     # make the account persistent
-    with psycopg2.connect(DATABASE_URL) as con:
-        with con.cursor() as cur:
-            cur.execute('UPDATE auth SET expires = %s WHERE user_id = %s ', ( 0, user.user_id ))
+    auth = deta.Base("auth")
+    fetch_res = auth.fetch({"user_id": user.user_id})
+    for item in fetch_res.items:
+        logger.info(item)
+        auth.update({"expires": 0}, key=item["key"])
 
     return RedirectResponse(f"{UI_URL}")
 

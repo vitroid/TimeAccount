@@ -15,7 +15,7 @@
         let today = 0
         for(let i=0; i<h.length; i++){
             let event = h[i]
-            let daycode = Math.floor((event[1]+JSTFIX) / (24*60) )
+            let daycode = Math.floor((event.endtime+JSTFIX) / (24*60) )
             if ( today == 0 ){
                 today = daycode
             }
@@ -54,9 +54,9 @@
             </div>
             {#each events as event, i}
             <!-- 0 user_id, 1 endtime, 2 duration, 3 category, 4 action, 5 hours, 6 minutes-->
-            <div class="ev" style="background-color:{$palettes[event[3]]};" >
+            <div class="ev" style="background-color:{$palettes[event.category]};" >
                 <!-- height:{event[2]}px; -->
-                {event[5]}:{event[6]} {event[4]}
+                {event.hours}:{event.minutes} {event.action}
             </div>
             {/each}
         </div>

@@ -14,8 +14,11 @@ sendgrid = "*"
 python-jose = "*"
 passlib = "*"
 python-multipart = "*"
+deta = "*"
+bcrypt = "*"
 
 [dev-packages]
+deta = "*"
 
 [requires]
 python_version = "3.9"

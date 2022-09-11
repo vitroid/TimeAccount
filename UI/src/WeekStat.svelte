@@ -12,10 +12,10 @@
         categories = []
         for(let i=0; i<h.length; i++){
             const event = h[i]
-            const endtime = event[1]
-            const duration = event[2]
-            const category = event[3]
-            const action = event[4]
+            const endtime = event.endtime
+            const duration = event.duration
+            const category = event.category
+            const action = event.action
 
             accum(categories, category, action, duration)
         }
@@ -43,7 +43,7 @@
 
 
 <div class="outerbox">
-    <TagTitle title="TimeAccount of a week" />
+    <TagTitle title="TimeAccount of the week" />
     {#each Object.keys(categories) as category, i}
     <div class="container" style='height:{catsum[category]}vh; background-color:{$palettes[i]}' >
         {#each Object.keys(categories[category]).sort((a,b)=>{return categories[category][b] - categories[category][a]}) as action, j}

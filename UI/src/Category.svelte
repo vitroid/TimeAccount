@@ -35,7 +35,14 @@
         // 1分以上なら
         if ( delta > 0 ){
             // 履歴に記録する
-            history.update(v => [[0,now,delta,id,action,h,m], ...v])
+            history.update(v => [{
+                user_id:0,
+                endtime:now,
+                dutation:delta,
+                category:id,
+                action:action,
+                hours:h,
+                minutes:m}, ...v])
             // historyを更新することで、自動的にボタンが更新される、はず。
             storeAction(now, delta, id, action)
 

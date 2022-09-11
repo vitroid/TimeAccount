@@ -20,14 +20,14 @@ export function statistics(events, binw, oldest){
     // 時間をさかのぼる順序で
     for ( let i=0; i<events.length; i++ ){
         let event = events[i]
-        let endtime = event[1]
+        let endtime = event.endtime
         if ( oldest > endtime ){
             break;
         }
         if ( laststart == 0 ){
             laststart = endtime
         }
-        let duration = event[2]
+        let duration = event.duration
         // 重なっている時は、新しい記録を信じ、古いほうを削る。
         if ( laststart < endtime ){
             duration -= (endtime - laststart)
@@ -37,7 +37,7 @@ export function statistics(events, binw, oldest){
             }
         }
         laststart = endtime - duration
-        const category = event[3]
+        const category = event.category
         const bin = Math.floor( (endtime + JSTFIX ) / binw )
         let dbin = Math.floor( origin / binw ) - bin
         let left = endtime + JSTFIX - bin*binw
